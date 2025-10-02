@@ -16,3 +16,20 @@ Comandos úteis
 - Worker: `celery -A app.workers.celery_app.celery worker -l info`
 - Testes: `pytest -q`
 
+Instalação
+- Dependências nativas (para PDF/OCR):
+  - Debian/Ubuntu: `sudo apt-get install -y ghostscript poppler-utils tesseract-ocr tesseract-ocr-por tesseract-ocr-eng qpdf`
+  - macOS (Homebrew): `brew install ghostscript poppler tesseract qpdf`
+
+- Ambiente Python (desenvolvimento/testes):
+  - `cd backend`
+  - `python -m venv .venv && source .venv/bin/activate`
+  - `pip install -r requirements-dev.txt`
+
+- Ambiente Python (produção/containers):
+  - Instale apenas dependências de runtime: `pip install -r requirements.txt`
+
+Testes
+- Rodar: `pytest` ou `pytest -q`
+- Cobertura: `pytest --cov=app --cov-report=term-missing`
+

@@ -1,0 +1,17 @@
+# Dev/test requirements for backend
+# Installs base runtime deps and adds testing/linting extras.
+
+-r requirements.txt
+
+# Testing
+pytest
+pytest-asyncio
+pytest-cov
+
+# HTTP client used in tests
+httpx
+
+# Formatting & linting
+black
+ruff
+

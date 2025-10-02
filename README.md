@@ -1,5 +1,9 @@
 ConvertaJá — Conversor e Ferramentas de PDF Online
 
+[![CI](https://github.com/Ismaelly1984/ConvertaJa/actions/workflows/ci.yml/badge.svg)](https://github.com/Ismaelly1984/ConvertaJa/actions/workflows/ci.yml)
+[![Pages](https://github.com/Ismaelly1984/ConvertaJa/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/Ismaelly1984/ConvertaJa/actions/workflows/pages/pages-build-deployment)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fismaelly1984.github.io%2FConvertaJa)](https://ismaelly1984.github.io/ConvertaJa)
+
 Resumo
 - MVP completo para conversão/manipulação de PDFs: unir, dividir, comprimir, PDF→imagens e OCR (pt-BR/en).
 - Backend: FastAPI + Celery/Redis para jobs pesados (compressão, OCR, pdf→imagens).
@@ -19,7 +23,9 @@ Como rodar localmente (sem Docker)
 1) Backend
    - Requisitos do sistema: Ghostscript (`gs`), Poppler (`pdftoppm`), Tesseract (+ pacotes de idioma `por` e `eng`).
    - Python 3.11+
-   - Instale deps: `pip install -r converta-ja/backend/requirements.txt`
+   - Instale deps:
+     - Dev/Test: `pip install -r converta-ja/backend/requirements-dev.txt`
+     - Runtime: `pip install -r converta-ja/backend/requirements.txt`
    - Exporte variáveis (ver `.env.example` em README desta pasta):
      - PORT=8000, MAX_FILE_MB=25, ASYNC_JOBS=true, REDIS_URL=redis://localhost:6379/0, TMP_DIR=/tmp/convertaja, TTL_UPLOAD_MINUTES=30, OCR_LANGS=por,eng
    - Rode Redis local.
@@ -39,6 +45,23 @@ Testes
 - Backend: `cd converta-ja/backend && pytest -q`.
 - Cobertura esperada (services): >= 85% (indicativa no MVP; aumente conforme evolui).
 - E2E Frontend (Playwright): placeholder a ser adicionado em iteração futura.
+
+CI/CD
+- Workflow: `.github/workflows/ci.yml` (GitHub Actions)
+  - Backend (pytest): instala deps nativas, faz lint (ruff), format check (black) e executa testes com cobertura (artefato `backend-coverage-xml`).
+  - Frontend (Vite): instala deps, roda ESLint e `npm run build` (artefato `frontend-dist`).
+  - Deploy GitHub Pages (main): publica o conteúdo de `frontend/dist` gerado pelo job de frontend.
+  - Publicação de imagens Docker (GHCR, main): constrói e publica imagens do backend.
+
+- Habilitar GitHub Pages
+  - No GitHub: Settings → Pages → Build and deployment → Source: GitHub Actions.
+  - Faça push na branch `main`; o job `deploy_frontend` publicará o site.
+
+- Imagens no GHCR
+  - Tags geradas:
+    - API: `ghcr.io/Ismaelly1984/ConvertaJa-api:latest` e `ghcr.io/Ismaelly1984/ConvertaJa-api:<git_sha>`
+    - Worker: `ghcr.io/Ismaelly1984/ConvertaJa-worker:latest` e `ghcr.io/Ismaelly1984/ConvertaJa-worker:<git_sha>`
+  - Como puxar (exemplo): `docker pull ghcr.io/Ismaelly1984/ConvertaJa-api:latest`
 
 API — Endpoints principais
 - POST `/api/pdf/merge` → PDF unido (attachment `merged.pdf`).
@@ -65,4 +88,3 @@ Roadmap (pós-MVP)
 - Armazenamento S3 para resultados grandes.
 - Login/JWT + Stripe para plano Premium.
 - E2E com Playwright e perfis Lighthouse 90+.
-
