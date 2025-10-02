@@ -123,7 +123,9 @@ export default function Home() {
         try {
           if (ct.includes('application/json')) { const data: { error?: string; message?: string } = await res.json(); message = data?.error || data?.message || message }
           else { const text = await res.text(); if (text) message = text.slice(0, 200) }
-        } catch {}
+        } catch (_err) {
+          /* ignore parse error */
+        }
         throw new Error(message)
       }
       const data: { text?: string } = await res.json()

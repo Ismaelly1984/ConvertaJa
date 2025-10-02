@@ -1,3 +1,5 @@
+/* eslint-env serviceworker */
+/* global self, caches, fetch */
 const CACHE = 'converta-cache-v1';
 const ASSETS = ['/', '/index.html'];
 
@@ -20,4 +22,3 @@ self.addEventListener('fetch', (event) => {
     )
   );
 });
-

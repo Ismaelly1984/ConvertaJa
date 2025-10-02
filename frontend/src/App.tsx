@@ -198,7 +198,9 @@ export default function App() {
             const text = await res.text()
             if (text) message = text.slice(0, 200)
           }
-        } catch {}
+        } catch (_err) {
+          /* ignore parse error */
+        }
         throw new Error(message)
       }
       const expectZip = ct.includes('application/zip') || ct.includes('application/octet-stream')
@@ -335,7 +337,9 @@ export default function App() {
           } else {
             const text = await res.text(); if (text) message = text.slice(0, 200)
           }
-        } catch {}
+        } catch (_err) {
+          /* ignore parse error */
+        }
         throw new Error(message)
       }
       const data: { text?: string } = await res.json()
