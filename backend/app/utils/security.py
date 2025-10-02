@@ -1,0 +1,32 @@
+from __future__ import annotations
+
+from starlette.responses import Response
+import os
+
+
+def pdf_has_javascript(path: str) -> bool:
+    try:
+        with open(path, 'rb') as f:
+            data = f.read(2_000_000)  # lê até 2MB para heurística simples
+        # Heurística conservadora: só marca quando há indícios diretos de JavaScript
+        # /OpenAction e /AA ocorrem em PDFs legítimos (ex.: abrir em página X) e geram falso-positivo.
+        tokens = [b'/JavaScript', b'/JS']
+        return any(t in data for t in tokens)
+    except Exception:
+        return False
+
+
+def add_csp_headers(response: Response) -> None:
+    # Content Security Policy conforme requisitos
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com data:; "
+        "img-src 'self' data: blob:; "
+        "connect-src 'self'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'"
+    )
+    response.headers["Content-Security-Policy"] = csp

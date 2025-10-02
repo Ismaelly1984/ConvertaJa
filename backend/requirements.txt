@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+pydantic
+celery
+redis
+pypdf
+pdf2image
+pytesseract
+python-multipart
+httpx
+pytest
+pytest-asyncio
+black
+ruff

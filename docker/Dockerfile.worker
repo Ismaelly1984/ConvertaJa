@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ghostscript \
+    poppler-utils \
+    tesseract-ocr \
+    tesseract-ocr-por \
+    tesseract-ocr-eng \
+    qpdf \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY backend/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+COPY backend /app
+
+ENV REDIS_URL=redis://redis:6379/0 \
+    TMP_DIR=/tmp/convertaja
+
+CMD ["celery", "-A", "app.workers.celery_app.celery", "worker", "-l", "info"]
+

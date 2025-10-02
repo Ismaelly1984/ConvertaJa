@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    environment:
+      PORT: "8000"
+      ENV: "production"
+      MAX_FILE_MB: "25"
+      ASYNC_JOBS: "true"
+      REDIS_URL: "redis://redis:6379/0"
+      TMP_DIR: "/tmp/convertaja"
+      TTL_UPLOAD_MINUTES: "30"
+      OCR_LANGS: "por,eng"
+      CORS_ORIGINS: "http://localhost:5173"
+    ports:
+      - "8000:8000"
+    volumes:
+      - convertaja_tmp:/tmp/convertaja
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.worker
+    environment:
+      REDIS_URL: "redis://redis:6379/0"
+      TMP_DIR: "/tmp/convertaja"
+    volumes:
+      - convertaja_tmp:/tmp/convertaja
+    depends_on:
+      - redis
+
+volumes:
+  convertaja_tmp: {}
+

@@ -1,0 +1,18 @@
+/* The following @tailwind directives require Tailwind CSS and PostCSS setup.
+   If you see an error like "Unknown at rule @tailwind", ensure your build tool is configured for Tailwind.
+   Otherwise, remove these lines and import the generated Tailwind CSS file instead. */
+
+@import 'tailwindcss/base.css';
+@import 'tailwindcss/components.css';
+@import 'tailwindcss/utilities.css';
+
+/* Acessibilidade de foco: mostrar apenas para teclado */
+@layer base {
+  :focus-visible {
+    outline: 2px solid #0f172a; /* slate-900 */
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
