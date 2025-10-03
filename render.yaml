@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: converta-api
+    env: docker
+    plan: free
+    autoDeploy: true
+    dockerfilePath: docker/Dockerfile.api
+    dockerContext: .
+    healthCheckPath: /docs
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: ENV
+        value: production
+      - key: MAX_FILE_MB
+        value: 25
+      - key: ASYNC_JOBS
+        value: false
+      - key: TMP_DIR
+        value: /tmp/convertaja
+      - key: TTL_UPLOAD_MINUTES
+        value: 30
+      - key: OCR_LANGS
+        value: por,eng
+      - key: CORS_ORIGINS
+        value: https://ismaelly1984.github.io
+
+  # Uncomment these if/when you switch to async jobs with shared storage (e.g., S3)
+  # - type: worker
+  #   name: converta-worker
+  #   env: docker
+  #   plan: free
+  #   dockerfilePath: docker/Dockerfile.worker
+  #   dockerContext: .
+  #   envVars:
+  #     - key: REDIS_URL
+  #       fromService:
+  #         type: redis
+  #         name: converta-redis
+  #         property: connectionString
+  #     - key: TMP_DIR
+  #       value: /tmp/convertaja
+
+  # - type: redis
+  #   name: converta-redis
+  #   ipAllowList: []
+

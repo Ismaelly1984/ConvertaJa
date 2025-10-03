@@ -1,21 +1,6 @@
 FROM python:3.11-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ghostscript \
-    poppler-utils \
-    tesseract-ocr \
-    tesseract-ocr-por \
-    tesseract-ocr-eng \
-    qpdf \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY backend/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
-
+ENV PYTHONDONTWRITEBYTECODE=1
 COPY backend /app
 
 ENV PORT=8000 \
@@ -29,5 +14,5 @@ ENV PORT=8000 \
     CORS_ORIGINS=http://localhost:5173
 
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-
+# Respect PORT env (Render sets PORT dynamically). Default comes from ENV above.
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
