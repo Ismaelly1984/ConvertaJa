@@ -58,10 +58,10 @@ CI/CD
   - Faça push na branch `main`; o job `deploy_frontend` publicará o site.
 
 - Imagens no GHCR
-  - Tags geradas:
-    - API: `ghcr.io/Ismaelly1984/ConvertaJa-api:latest` e `ghcr.io/Ismaelly1984/ConvertaJa-api:<git_sha>`
-    - Worker: `ghcr.io/Ismaelly1984/ConvertaJa-worker:latest` e `ghcr.io/Ismaelly1984/ConvertaJa-worker:<git_sha>`
-  - Como puxar (exemplo): `docker pull ghcr.io/Ismaelly1984/ConvertaJa-api:latest`
+  - Tags geradas (minúsculas, exigência do GHCR):
+    - API: `ghcr.io/ismaelly1984/convertaja-api:latest` e `ghcr.io/ismaelly1984/convertaja-api:<git_sha>`
+    - Worker: `ghcr.io/ismaelly1984/convertaja-worker:latest` e `ghcr.io/ismaelly1984/convertaja-worker:<git_sha>`
+  - Como puxar (exemplo): `docker pull ghcr.io/ismaelly1984/convertaja-api:latest`
 
 API — Endpoints principais
 - POST `/api/pdf/merge` → PDF unido (attachment `merged.pdf`).
