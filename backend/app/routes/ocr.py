@@ -45,7 +45,12 @@ async def ocr_endpoint(
         langs = ["por"]
     allowed = set(settings.OCR_LANGS)
     if not set(langs).issubset(allowed):
-        raise HTTPException(status_code=400, detail=f"Idiomas não suportados. Permitidos: {', '.join(settings.OCR_LANGS)}")
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Idiomas não suportados. Permitidos: {', '.join(settings.OCR_LANGS)}"
+            ),
+        )
 
     try:
         text = ocr_pdf_or_image(input_path, langs)

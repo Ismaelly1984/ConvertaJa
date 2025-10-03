@@ -5,7 +5,10 @@ import time
 from app.utils.files import remove_old_files
 
 
-def cleanup_tmp_dir_periodically(tmp_dir: str, ttl_minutes: int, interval_seconds: int = 60) -> None:
+
+def cleanup_tmp_dir_periodically(
+    tmp_dir: str, ttl_minutes: int, interval_seconds: int = 60
+) -> None:
     # Loop de limpeza;
     while True:
         try:
@@ -13,4 +16,3 @@ def cleanup_tmp_dir_periodically(tmp_dir: str, ttl_minutes: int, interval_second
         except Exception:
             pass
         time.sleep(interval_seconds)
-
