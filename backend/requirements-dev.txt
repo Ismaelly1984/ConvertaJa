@@ -9,7 +9,7 @@ pytest-asyncio
 pytest-cov
 
 # HTTP client used in tests
-httpx
+httpx<0.24
 
 # Formatting & linting
 black

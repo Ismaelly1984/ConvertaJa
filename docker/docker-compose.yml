@@ -27,6 +27,27 @@ services:
     depends_on:
       - redis
 
+  api-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+      target: dev
+    environment:
+      PORT: "8000"
+      ENV: "test"
+      MAX_FILE_MB: "25"
+      ASYNC_JOBS: "false"
+      REDIS_URL: "redis://redis:6379/1"
+      TMP_DIR: "/tmp/convertaja"
+      TTL_UPLOAD_MINUTES: "5"
+      OCR_LANGS: "por,eng"
+      CORS_ORIGINS: "http://localhost:5173"
+    volumes:
+      - ${PWD}/backend:/app:delegated
+      - convertaja_tmp:/tmp/convertaja
+    depends_on:
+      - redis
+
   worker:
     build:
       context: ..
