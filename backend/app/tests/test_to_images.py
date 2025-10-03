@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 
+import app.services.images_service as svc
 from app.services.images_service import pdf_to_images
 
 
@@ -21,12 +22,10 @@ def test_pdf_to_images_mocks_pdf2image(tmp_path, monkeypatch):
     def fake_convert_from_path(path, dpi=200):  # noqa: ARG001
         return [FakeImage(1), FakeImage(2)]
 
-    import app.services.images_service as svc
-
     monkeypatch.setattr(svc, "convert_from_path", fake_convert_from_path)
     out_dir = tmp_path / "out"
     res = pdf_to_images(str(input_path), str(out_dir), "jpg", 150)
-    assert len(res) == 2
+    EXPECTED_COUNT = 2
+    assert len(res) == EXPECTED_COUNT
     for p in res:
         assert os.path.exists(p)
-

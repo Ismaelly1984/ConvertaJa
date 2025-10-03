@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import app.services.ocr_service as svc
 from app.services.ocr_service import ocr_pdf_or_image
 
 
@@ -14,8 +15,6 @@ def test_ocr_pdf_textual_returns_text(tmp_path, monkeypatch):
     class FakeReader:
         def __init__(self, path):  # noqa: ARG002
             self.pages = [FakePage(), FakePage()]
-
-    import app.services.ocr_service as svc
 
     monkeypatch.setattr(svc, "PdfReader", FakeReader)
     text = ocr_pdf_or_image(str(pdf), ["eng"])  # no ocr needed
@@ -43,12 +42,9 @@ def test_ocr_pdf_scanned_uses_tesseract(tmp_path, monkeypatch):
     def fake_ocr(img, lang="eng"):
         return "texto-ocr"
 
-    import app.services.ocr_service as svc
-
     monkeypatch.setattr(svc, "PdfReader", FakeReader)
     monkeypatch.setattr(svc, "convert_from_path", fake_convert_from_path)
     monkeypatch.setattr(svc.pytesseract, "image_to_string", lambda img, lang=None: fake_ocr(img, lang))
 
     text = ocr_pdf_or_image(str(pdf), ["por", "eng"])  # triggers OCR
     assert "texto-ocr" in text
-

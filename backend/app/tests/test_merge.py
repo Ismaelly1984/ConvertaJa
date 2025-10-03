@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import io
 import os
 
 from pypdf import PdfWriter
+
 from app.services.merge_service import merge_pdfs
 
 
@@ -23,4 +23,3 @@ def test_merge_pdfs(tmp_path):
     make_pdf(str(b), 3)
     res = merge_pdfs([str(a), str(b)], str(out))
     assert os.path.exists(res)
-

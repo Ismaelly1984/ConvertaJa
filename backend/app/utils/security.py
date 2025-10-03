@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from starlette.responses import Response
-import os
 
 
 def pdf_has_javascript(path: str) -> bool:
@@ -12,7 +11,7 @@ def pdf_has_javascript(path: str) -> bool:
         # /OpenAction e /AA ocorrem em PDFs legítimos (ex.: abrir em página X) e geram falso-positivo.
         tokens = [b'/JavaScript', b'/JS']
         return any(t in data for t in tokens)
-    except Exception:
+    except Exception:  # noqa: BLE001
         return False
 
 

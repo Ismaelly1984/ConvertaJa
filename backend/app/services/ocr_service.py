@@ -2,17 +2,16 @@ from __future__ import annotations
 
 import os
 import uuid
-from typing import List
 
-from pdf2image import convert_from_path
-from pypdf import PdfReader
 import pytesseract
+from pdf2image import convert_from_path
 from PIL import Image
+from pypdf import PdfReader
 
 
 def extract_text_pdf_textual(path: str) -> str:
     reader = PdfReader(path)
-    texts: List[str] = []
+    texts: list[str] = []
     for page in reader.pages:
         try:
             t = page.extract_text() or ""
@@ -23,7 +22,7 @@ def extract_text_pdf_textual(path: str) -> str:
     return "\n\n".join(texts).strip()
 
 
-def ocr_pdf_or_image(path: str, langs: List[str]) -> str:
+def ocr_pdf_or_image(path: str, langs: list[str]) -> str:
     ext = os.path.splitext(path)[1].lower()
     if ext == ".pdf":
         text = extract_text_pdf_textual(path)
@@ -32,7 +31,7 @@ def ocr_pdf_or_image(path: str, langs: List[str]) -> str:
         # fallback OCR por imagens
         images = convert_from_path(path, dpi=200)
         langs_tag = "+".join(langs)
-        texts: List[str] = []
+        texts: list[str] = []
         for img in images:
             t = pytesseract.image_to_string(img, lang=langs_tag)
             if t:

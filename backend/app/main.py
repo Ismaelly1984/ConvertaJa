@@ -4,25 +4,17 @@ import os
 import threading
 import time
 import uuid
-from typing import Iterable
+from collections.abc import Iterable
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 
 from app.config import Settings, get_settings
+from app.routes import jobs, ocr, pdf_compress, pdf_merge, pdf_split, pdf_to_images
+from app.services.cleanup_service import cleanup_tmp_dir_periodically
 from app.utils.logging import configure_logging, log_request
 from app.utils.security import add_csp_headers
-from app.services.cleanup_service import cleanup_tmp_dir_periodically
-from app.routes import (
-    pdf_merge,
-    pdf_split,
-    pdf_compress,
-    pdf_to_images,
-    ocr,
-    jobs,
-)
-
 
 settings: Settings = get_settings()
 
@@ -126,4 +118,3 @@ async def on_startup():
         daemon=True,
     )
     th.start()
-

@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from typing import List, Tuple
-
 
 class RangeParseError(ValueError):
     pass
 
 
-def parse_ranges(s: str, total_pages: int) -> List[Tuple[int, int]]:
+def parse_ranges(s: str, total_pages: int) -> list[tuple[int, int]]:
     """
     Recebe string como "1-3,5,7-8" e retorna lista de tuplas (start, end) 1-based inclusivas.
     Valida para estar dentro de [1, total_pages].
@@ -15,7 +13,7 @@ def parse_ranges(s: str, total_pages: int) -> List[Tuple[int, int]]:
     if not s or not s.strip():
         raise RangeParseError("ranges vazio")
     parts = [p.strip() for p in s.split(",") if p.strip()]
-    result: List[Tuple[int, int]] = []
+    result: list[tuple[int, int]] = []
     for part in parts:
         if "-" in part:
             a, b = part.split("-", 1)
@@ -36,4 +34,3 @@ def parse_ranges(s: str, total_pages: int) -> List[Tuple[int, int]]:
                 raise RangeParseError("página fora do total de páginas")
             result.append((page, page))
     return result
-

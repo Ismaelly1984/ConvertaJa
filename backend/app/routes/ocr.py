@@ -1,19 +1,16 @@
 from __future__ import annotations
 
 import os
-import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 
 from app.config import Settings
 from app.deps import get_app_settings
+from app.services.ocr_service import ocr_pdf_or_image, save_text
 from app.utils.files import save_upload
 from app.utils.mime import is_image, is_pdf
-from app.services.ocr_service import ocr_pdf_or_image, save_text
 from app.utils.security import pdf_has_javascript
-
 
 router = APIRouter()
 
@@ -58,13 +55,13 @@ async def ocr_endpoint(
         # Remove caminho temporário antes de retornar
         try:
             os.remove(input_path)
-        except Exception:
+        except Exception:  # noqa: BLE001
             pass
-        raise HTTPException(status_code=500, detail=f"Falha no OCR: {msg}")
+        raise HTTPException(status_code=500, detail=f"Falha no OCR: {msg}") from e
     finally:
         try:
             os.remove(input_path)
-        except Exception:
+        except Exception:  # noqa: BLE001
             pass
 
     txt_path = save_text(settings.TMP_DIR, text)

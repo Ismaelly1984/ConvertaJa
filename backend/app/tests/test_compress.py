@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import os
+import subprocess
 from types import SimpleNamespace
 
 from pypdf import PdfWriter
+
 from app.services.compress_service import compress_pdf
 
 
@@ -29,9 +31,6 @@ def test_compress_pdf_mocks_subprocess(tmp_path, monkeypatch):
                     f.write(b"%PDF-1.4\n%%EOF\n")
         return SimpleNamespace(returncode=0, stderr=b"")
 
-    import subprocess
-
     monkeypatch.setattr(subprocess, "run", fake_run)
     res = compress_pdf(str(src), str(out), "medium")
     assert os.path.exists(res)
-

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 
-
 PDF_MIME = "application/pdf"
 PDF_MIMES = {
     PDF_MIME,

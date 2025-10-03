@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 import os
-from typing import Literal
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 
 from app.config import Settings
 from app.deps import get_app_settings
+from app.services.compress_service import Quality, compress_pdf
 from app.utils.files import save_upload
 from app.utils.mime import is_pdf, looks_like_pdf
-from app.services.compress_service import Quality, compress_pdf
 from app.utils.security import pdf_has_javascript
-
 
 router = APIRouter()
 
@@ -35,6 +33,6 @@ async def compress_endpoint(
     try:
         compress_pdf(input_path, out_path, quality)
     except RuntimeError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
     headers = {"Content-Disposition": 'attachment; filename="compressed.pdf"'}
     return FileResponse(out_path, media_type="application/pdf", headers=headers)

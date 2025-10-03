@@ -3,8 +3,8 @@ from __future__ import annotations
 import os
 import shutil
 import uuid
+from collections.abc import Iterable
 from datetime import datetime, timedelta
-from typing import Iterable
 from zipfile import ZIP_DEFLATED, ZipFile
 
 
@@ -54,4 +54,3 @@ def remove_old_files(tmp_dir: str, ttl_minutes: int) -> int:
             except OSError:
                 pass
     return removed
-

@@ -1,17 +1,16 @@
 from __future__ import annotations
 
 import io
-import os
+from http import HTTPStatus
 
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
+from pypdf import PdfWriter
 
 from app.main import app
 
 
 def make_pdf_bytes(pages: int = 1) -> bytes:
-    from pypdf import PdfWriter
-
     w = PdfWriter()
     for _ in range(pages):
         w.add_blank_page(width=72, height=72)
@@ -32,7 +31,7 @@ async def test_merge_basic(tmp_path, monkeypatch):
     ]
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         resp = await ac.post("/api/pdf/merge", files=files)
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
         assert resp.headers.get("content-disposition", "").startswith("attachment;")
 
 
@@ -44,7 +43,7 @@ async def test_split_invalid_ranges(tmp_path, monkeypatch):
     data = {"ranges": ""}
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         resp = await ac.post("/api/pdf/split", files=files, data=data)
-        assert resp.status_code == 400
+        assert resp.status_code == HTTPStatus.BAD_REQUEST
 
 
 @pytest.mark.asyncio
@@ -53,4 +52,4 @@ async def test_upload_too_large_header(monkeypatch):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         headers = {"Content-Length": str(26 * 1024 * 1024)}
         resp = await ac.post("/api/pdf/merge", headers=headers)
-        assert resp.status_code == 413
+        assert resp.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE

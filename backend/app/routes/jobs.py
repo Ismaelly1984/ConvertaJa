@@ -3,26 +3,27 @@ from __future__ import annotations
 import os
 from typing import Any, Literal
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse
+from pypdf import PdfReader
 
 from app.config import Settings
 from app.deps import get_app_settings
 from app.utils.files import save_upload
-from app.utils.mime import is_pdf, is_image
-from app.utils.ranges import parse_ranges, RangeParseError
-from app.workers.celery_app import celery
+from app.utils.mime import is_image, is_pdf
+from app.utils.ranges import RangeParseError, parse_ranges
 from app.workers import tasks
-
+from app.workers.celery_app import celery
 
 router = APIRouter()
 
 
 JobType = Literal["merge", "split", "compress", "to-images", "ocr"]
+MIN_FILES_FOR_MERGE = 2
 
 
 @router.post("/jobs")
-async def create_job(
+async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     type: JobType = Form(...),
     settings: Settings = Depends(get_app_settings),
     # merge
@@ -41,7 +42,7 @@ async def create_job(
     tmp = settings.TMP_DIR
 
     if type == "merge":
-        if not files or len(files) < 2:
+        if not files or len(files) < MIN_FILES_FOR_MERGE:
             raise HTTPException(status_code=400, detail="Envie 2+ PDFs para merge")
         inputs = []
         for f in files:
@@ -61,13 +62,11 @@ async def create_job(
             raise HTTPException(status_code=400, detail="Informe ranges")
         data = await file.read()
         input_path = save_upload(tmp, file.filename, data)
-        from pypdf import PdfReader
-
         total = len(PdfReader(input_path).pages)
         try:
             pr = parse_ranges(ranges, total)
         except RangeParseError as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=400, detail=str(e)) from e
         res = tasks.task_split.apply_async(kwargs={"tmp_dir": tmp, "input_path": input_path, "ranges": pr})
         return {"jobId": res.id}
 
@@ -140,4 +139,3 @@ async def job_download(job_id: str, settings: Settings = Depends(get_app_setting
             headers = {"Content-Disposition": f'attachment; filename="result{ext}"'}
             return FileResponse(path, media_type=mime, headers=headers)
     raise HTTPException(status_code=404, detail="Resultado do job não encontrado")
-

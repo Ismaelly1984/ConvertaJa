@@ -1,33 +1,32 @@
 from __future__ import annotations
 
 import os
-from typing import List
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 
 from app.config import Settings
 from app.deps import get_app_settings
+from app.services.merge_service import merge_pdfs
 from app.utils.files import save_upload
 from app.utils.mime import is_pdf, looks_like_pdf
-from app.services.merge_service import merge_pdfs
 from app.utils.security import pdf_has_javascript
-
 
 router = APIRouter()
 
 
 @router.post("/merge", response_class=FileResponse)
 async def merge_endpoint(
-    files: List[UploadFile] = File(..., description="2-20 PDFs"),
+    files: list[UploadFile] = File(..., description="2-20 PDFs"),
     settings: Settings = Depends(get_app_settings),
 ):
-    if not (2 <= len(files) <= 20):
+    MIN_FILES, MAX_FILES = 2, 20
+    if not (MIN_FILES <= len(files) <= MAX_FILES):
         raise HTTPException(status_code=400, detail="Envie entre 2 e 20 PDFs")
 
     # Validação de MIME e tamanho total (<= 100MB)
     total_size = 0
-    input_paths: List[str] = []
+    input_paths: list[str] = []
     max_bytes = settings.MAX_FILE_MB * 1024 * 1024
     for f in files:
         data = await f.read()

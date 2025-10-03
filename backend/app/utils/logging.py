@@ -7,7 +7,6 @@ import re
 import sys
 from typing import Any
 
-
 PII_PATTERN = re.compile(r"(authorization: .*?)(?:\r|\n|$)", re.IGNORECASE)
 
 
@@ -40,4 +39,3 @@ def log_request(request, status_code: int, request_id: str, duration_ms: int) ->
         logging.info(_mask_pii(message))
     except Exception:  # noqa: BLE001
         logging.exception("failed to log request")
-

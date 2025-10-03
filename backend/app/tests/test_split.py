@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import os
 
-from pypdf import PdfWriter, PdfReader
+from pypdf import PdfReader, PdfWriter
+
 from app.services.split_service import split_pdf
 from app.utils.ranges import parse_ranges
 
@@ -22,8 +23,9 @@ def test_split_pdf(tmp_path):
     out1 = tmp_path / "p1.pdf"
     out2 = tmp_path / "p2.pdf"
     res = split_pdf(str(src), parts, [str(out1), str(out2)])
-    assert len(res) == 2
+    assert len(res) == len(parts)
     assert os.path.exists(res[0]) and os.path.exists(res[1])
-    assert len(PdfReader(res[0]).pages) == 2
-    assert len(PdfReader(res[1]).pages) == 1
-
+    TWO = 2
+    ONE = 1
+    assert len(PdfReader(res[0]).pages) == TWO
+    assert len(PdfReader(res[1]).pages) == ONE

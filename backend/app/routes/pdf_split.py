@@ -1,20 +1,18 @@
 from __future__ import annotations
 
 import os
-from typing import List
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
+from pypdf import PdfReader
 
 from app.config import Settings
 from app.deps import get_app_settings
+from app.services.split_service import split_pdf
 from app.utils.files import save_upload, zip_paths
 from app.utils.mime import is_pdf, looks_like_pdf
 from app.utils.ranges import RangeParseError, parse_ranges
 from app.utils.security import pdf_has_javascript
-from app.services.split_service import split_pdf
-from pypdf import PdfReader
-
 
 router = APIRouter()
 
@@ -38,9 +36,9 @@ async def split_endpoint(
     try:
         parts = parse_ranges(ranges, total_pages)
     except RangeParseError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
-    out_paths: List[str] = []
+    out_paths: list[str] = []
     for idx, _ in enumerate(parts, start=1):
         out_paths.append(os.path.join(settings.TMP_DIR, f"split-{idx}.pdf"))
     res = split_pdf(input_path, parts, out_paths)

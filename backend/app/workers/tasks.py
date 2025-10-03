@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import os
-import uuid
 from typing import Any, Literal
 
-from app.workers.celery_app import celery
-from app.services.merge_service import merge_pdfs
-from app.services.split_service import split_pdf
-from app.services.compress_service import compress_pdf, Quality
+from app.services.compress_service import Quality, compress_pdf
 from app.services.images_service import pdf_to_images
-from app.services.ocr_service import ocr_pdf_or_image, save_text
+from app.services.merge_service import merge_pdfs
+from app.services.ocr_service import ocr_pdf_or_image
+from app.services.split_service import split_pdf
 from app.utils.files import zip_paths
+from app.workers.celery_app import celery
 
 
 @celery.task(bind=True)
@@ -56,4 +55,3 @@ def task_ocr(self, tmp_dir: str, input_path: str, langs: list[str]) -> dict[str,
     with open(out, "w", encoding="utf-8") as f:
         f.write(text)
     return {"path": out, "content_type": "text/plain"}
-

@@ -3,7 +3,6 @@ from __future__ import annotations
 import subprocess
 from typing import Literal
 
-
 Quality = Literal["low", "medium", "high"]
 
 
@@ -21,15 +20,15 @@ def _gs_params_for_quality(q: Quality) -> list[str]:
 
     return [
         "-dPDFSETTINGS=/screen",  # ponto de partida
-        f"-dColorImageDownsampleType=/Bicubic",
+        "-dColorImageDownsampleType=/Bicubic",
         f"-dColorImageResolution={dpi}",
-        f"-dGrayImageDownsampleType=/Bicubic",
+        "-dGrayImageDownsampleType=/Bicubic",
         f"-dGrayImageResolution={dpi}",
-        f"-dMonoImageDownsampleType=/Subsample",
+        "-dMonoImageDownsampleType=/Subsample",
         f"-dMonoImageResolution={dpi}",
-        f"-dColorImageFilter=/DCTEncode",
-        f"-dAutoFilterColorImages=true",
-        f"-dAutoFilterGrayImages=true",
+        "-dColorImageFilter=/DCTEncode",
+        "-dAutoFilterColorImages=true",
+        "-dAutoFilterGrayImages=true",
         f"-dJPEGQ={int(qfactor*100)}",
     ]
 
@@ -45,8 +44,7 @@ def compress_pdf(input_path: str, output_path: str, quality: Quality) -> str:
     ]
     args += _gs_params_for_quality(quality)
     args += ["-sOutputFile=" + output_path, input_path]
-    proc = subprocess.run(args, capture_output=True)
+    proc = subprocess.run(args, capture_output=True, check=False)
     if proc.returncode != 0:
         raise RuntimeError(f"Ghostscript falhou: {proc.stderr.decode(errors='ignore')}")
     return output_path
-

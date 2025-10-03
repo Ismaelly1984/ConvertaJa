@@ -2,18 +2,18 @@ from __future__ import annotations
 
 import os
 from io import BytesIO
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
-from pdf2image import convert_from_path, exceptions as pdf2_exceptions
+from pdf2image import convert_from_path
+from pdf2image import exceptions as pdf2_exceptions
 
 from app.config import Settings
 from app.deps import get_app_settings
 from app.utils.files import save_upload
 from app.utils.mime import is_pdf, looks_like_pdf
 from app.utils.security import pdf_has_javascript
-
 
 router = APIRouter()
 
@@ -51,14 +51,17 @@ async def to_images_endpoint(
     try:
         # Converte cada página para imagem (PIL.Image)
         images = convert_from_path(input_path, dpi=dpi)
-    except pdf2_exceptions.PDFPageCountError:
-        raise HTTPException(status_code=400, detail="PDF inválido ou sem páginas")
-    except pdf2_exceptions.PDFInfoNotInstalledError:
-        raise HTTPException(status_code=500, detail="Dependência 'poppler' (pdftoppm) não encontrada no servidor")
-    except pdf2_exceptions.PDFSyntaxError:
-        raise HTTPException(status_code=400, detail="PDF corrompido ou inválido")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Falha ao converter PDF: {str(e)}")
+    except pdf2_exceptions.PDFPageCountError as err:
+        raise HTTPException(status_code=400, detail="PDF inválido ou sem páginas") from err
+    except pdf2_exceptions.PDFInfoNotInstalledError as err:
+        raise HTTPException(
+            status_code=500,
+            detail="Dependência 'poppler' (pdftoppm) não encontrada no servidor",
+        ) from err
+    except pdf2_exceptions.PDFSyntaxError as err:
+        raise HTTPException(status_code=400, detail="PDF corrompido ou inválido") from err
+    except Exception as err:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"Falha ao converter PDF: {str(err)}") from err
     finally:
         # Limpa o PDF temporário
         try:
