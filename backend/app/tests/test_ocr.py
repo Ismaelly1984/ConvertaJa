@@ -4,7 +4,6 @@ import app.services.ocr_service as svc
 from app.services.ocr_service import ocr_pdf_or_image
 
 
-
 def test_ocr_pdf_textual_returns_text(tmp_path, monkeypatch):
     pdf = tmp_path / "a.pdf"
     pdf.write_bytes(b"%PDF-1.4\n%%EOF\n")
