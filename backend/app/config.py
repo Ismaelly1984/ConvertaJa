@@ -25,7 +25,7 @@ def get_settings() -> Settings:
     tmp_dir = os.getenv("TMP_DIR", "/tmp/convertaja")
     ttl = int(os.getenv("TTL_UPLOAD_MINUTES", "30"))
     langs = os.getenv("OCR_LANGS", "por,eng").split(",")
-    langs = [l.strip() for l in langs if l.strip()]
+    langs = [lang.strip() for lang in langs if lang.strip()]
     return Settings(
         PORT=port,
         ENV=env,
