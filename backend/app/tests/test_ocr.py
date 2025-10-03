@@ -44,7 +44,9 @@ def test_ocr_pdf_scanned_uses_tesseract(tmp_path, monkeypatch):
 
     monkeypatch.setattr(svc, "PdfReader", FakeReader)
     monkeypatch.setattr(svc, "convert_from_path", fake_convert_from_path)
-    monkeypatch.setattr(svc.pytesseract, "image_to_string", lambda img, lang=None: fake_ocr(img, lang))
+    monkeypatch.setattr(
+        svc.pytesseract, "image_to_string", lambda img, lang=None: fake_ocr(img, lang)
+    )
 
     text = ocr_pdf_or_image(str(pdf), ["por", "eng"])  # triggers OCR
     assert "texto-ocr" in text

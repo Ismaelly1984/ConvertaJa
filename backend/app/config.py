@@ -16,7 +16,6 @@ class Settings:
     OCR_LANGS: list[str]
 
 
-
 def get_settings() -> Settings:
     port = int(os.getenv("PORT", "8000"))
     env = os.getenv("ENV", "production")

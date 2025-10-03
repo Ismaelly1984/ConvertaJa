@@ -47,9 +47,7 @@ async def ocr_endpoint(
     if not set(langs).issubset(allowed):
         raise HTTPException(
             status_code=400,
-            detail=(
-                f"Idiomas não suportados. Permitidos: {', '.join(settings.OCR_LANGS)}"
-            ),
+            detail=(f"Idiomas não suportados. Permitidos: {', '.join(settings.OCR_LANGS)}"),
         )
 
     try:

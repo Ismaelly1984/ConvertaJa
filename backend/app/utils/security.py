@@ -5,11 +5,11 @@ from starlette.responses import Response
 
 def pdf_has_javascript(path: str) -> bool:
     try:
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             data = f.read(2_000_000)  # lê até 2MB para heurística simples
         # Heurística conservadora: só marca quando há indícios diretos de JavaScript
         # /OpenAction e /AA ocorrem em PDFs legítimos (ex.: abrir em página X) e geram falso-positivo.
-        tokens = [b'/JavaScript', b'/JS']
+        tokens = [b"/JavaScript", b"/JS"]
         return any(t in data for t in tokens)
     except Exception:  # noqa: BLE001
         return False

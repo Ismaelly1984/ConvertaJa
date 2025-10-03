@@ -18,4 +18,3 @@ celery.conf.task_serializer = "json"
 celery.conf.result_serializer = "json"
 celery.conf.task_track_started = True
 celery.conf.worker_prefetch_multiplier = 1
-

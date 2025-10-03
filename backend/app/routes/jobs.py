@@ -50,9 +50,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
                 raise HTTPException(status_code=415, detail="Apenas PDFs são aceitos")
             data = await f.read()
             inputs.append(save_upload(tmp, f.filename, data))
-        res = tasks.task_merge.apply_async(
-            kwargs={"tmp_dir": tmp, "inputs": inputs}
-        )
+        res = tasks.task_merge.apply_async(kwargs={"tmp_dir": tmp, "inputs": inputs})
         return {"jobId": res.id}
 
     if type == "split":
@@ -114,7 +112,9 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "ocr":
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF/Imagem")
-        if not (is_pdf(file.filename, file.content_type) or is_image(file.filename, file.content_type)):
+        if not (
+            is_pdf(file.filename, file.content_type) or is_image(file.filename, file.content_type)
+        ):
             raise HTTPException(status_code=415, detail="Apenas PDF/JPG/PNG são aceitos")
         langs = (lang or "por").split("+")
         data = await file.read()
@@ -154,7 +154,11 @@ async def job_status(job_id: str):
 @router.get("/jobs/{job_id}/download")
 async def job_download(job_id: str, settings: Settings = Depends(get_app_settings)):
     # tenta deduzir extensão comum
-    for ext, mime in ((".pdf", "application/pdf"), (".zip", "application/zip"), (".txt", "text/plain")):
+    for ext, mime in (
+        (".pdf", "application/pdf"),
+        (".zip", "application/zip"),
+        (".txt", "text/plain"),
+    ):
         path = os.path.join(settings.TMP_DIR, f"job-{job_id}{ext}")
         if os.path.exists(path):
             headers = {"Content-Disposition": f'attachment; filename="result{ext}"'}

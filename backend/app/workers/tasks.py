@@ -20,7 +20,9 @@ def task_merge(self, tmp_dir: str, inputs: list[str]) -> dict[str, Any]:
 
 
 @celery.task(bind=True)
-def task_split(self, tmp_dir: str, input_path: str, ranges: list[tuple[int, int]]) -> dict[str, Any]:
+def task_split(
+    self, tmp_dir: str, input_path: str, ranges: list[tuple[int, int]]
+) -> dict[str, Any]:
     out_paths = []
     for idx, (_a, _b) in enumerate(ranges, start=1):
         out_paths.append(os.path.join(tmp_dir, f"job-{self.request.id}-{idx}.pdf"))
