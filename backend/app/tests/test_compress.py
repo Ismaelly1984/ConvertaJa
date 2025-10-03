@@ -22,7 +22,7 @@ def test_compress_pdf_mocks_subprocess(tmp_path, monkeypatch):
     out = tmp_path / "out.pdf"
     make_pdf(str(src), 1)
 
-    def fake_run(args, capture_output=False):  # noqa: ARG001
+    def fake_run(args, capture_output=False, **kwargs):  # noqa: ARG001
         # Simula Ghostscript gerando o arquivo de saída
         for a in args:
             if isinstance(a, str) and a.startswith("-sOutputFile="):
