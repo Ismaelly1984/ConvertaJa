@@ -1,7 +1,6 @@
 /* eslint-env serviceworker */
-/* global self, caches, fetch */
-const CACHE = 'converta-cache-v1';
-const ASSETS = ['/', '/index.html'];
+const CACHE = 'convertaja-v1';
+const ASSETS = ['/', '/index.html', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));

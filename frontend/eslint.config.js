@@ -6,6 +6,9 @@ import reactPlugin from 'eslint-plugin-react'
 import globals from 'globals'
 
 export default [
+  // Ignore build and vendor folders
+  { ignores: ['dist/**', 'node_modules/**'] },
+
   js.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
@@ -24,6 +27,13 @@ export default [
       ...(tsPlugin.configs?.recommended?.rules ?? {}),
       'no-undef': 'off',
       'react/react-in-jsx-scope': 'off',
+    },
+  },
+  // Service worker file: provide proper globals
+  {
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: { ...globals.serviceworker },
     },
   },
 ]

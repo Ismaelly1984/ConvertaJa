@@ -198,8 +198,8 @@ export default function App() {
             const text = await res.text()
             if (text) message = text.slice(0, 200)
           }
-        } catch (_err) {
-          /* ignore parse error */
+        } catch (err) {
+          console.error(err)
         }
         throw new Error(message)
       }
@@ -337,8 +337,8 @@ export default function App() {
           } else {
             const text = await res.text(); if (text) message = text.slice(0, 200)
           }
-        } catch (_err) {
-          /* ignore parse error */
+        } catch (err) {
+          console.error(err)
         }
         throw new Error(message)
       }
