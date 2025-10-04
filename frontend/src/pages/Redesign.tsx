@@ -14,6 +14,22 @@ const tools: Record<Tool, { title: string; description: string }> = {
   ocr: { title: 'OCR', description: 'Extraia texto de PDF/Imagem (pt-BR/EN)' },
 }
 
+const colorBg: Record<string, string> = {
+  blue: 'bg-blue-100',
+  orange: 'bg-orange-100',
+  green: 'bg-green-100',
+  purple: 'bg-purple-100',
+  yellow: 'bg-yellow-100',
+}
+
+const colorText: Record<string, string> = {
+  blue: 'text-blue-600',
+  orange: 'text-orange-600',
+  green: 'text-green-600',
+  purple: 'text-purple-600',
+  yellow: 'text-yellow-600',
+}
+
 function formatFileSize(bytes: number): string {
   if (!bytes) return '0 Bytes'
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
@@ -218,14 +234,14 @@ export default function Redesign() {
                   onClick={() => onSelectTool(key)}
                   className={`tool-card rounded-xl p-6 hover-lift cursor-pointer ${currentTool === key ? 'tool-active' : ''}`}
                 >
-                  <div className={`w-16 h-16 bg-${color}-100 rounded-xl flex items-center justify-center mb-4`}>
-                    <svg className={`w-8 h-8 text-${color}-600`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className={`w-16 h-16 ${colorBg[color]} rounded-xl flex items-center justify-center mb-4`}>
+                    <svg className={`w-8 h-8 ${colorText[color]}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{title}</h3>
                   <p className="text-gray-600 mb-4">{desc}</p>
-                  <div className={`flex items-center text-sm text-${color}-600`}>
+                  <div className={`flex items-center text-sm ${colorText[color]}`}>
                     <span>Abrir</span>
                     <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
