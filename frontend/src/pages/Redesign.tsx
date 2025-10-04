@@ -141,7 +141,6 @@ export default function Redesign() {
       const txt = await resp.text().catch(() => '')
       throw new Error(txt || `Erro ${resp.status}`)
     }
-    const ct = (resp.headers.get('content-type') || '').toLowerCase()
     let filename = fallbackName
     const cd = resp.headers.get('content-disposition') || ''
     const m = /filename="?([^";]+)"?/i.exec(cd)
@@ -410,4 +409,3 @@ export default function Redesign() {
     </div>
   )
 }
-
