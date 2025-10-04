@@ -12,6 +12,7 @@ from app.deps import get_app_settings
 from app.utils.files import save_upload
 from app.utils.mime import is_image, is_pdf
 from app.utils.ranges import RangeParseError, parse_ranges
+
 # Importações de Celery/tarefas são feitas sob demanda dentro das rotas
 # para evitar falhas de import quando o ambiente não possui Celery runtime
 # (ex.: cenários de teste que não exercem endpoints de jobs).
