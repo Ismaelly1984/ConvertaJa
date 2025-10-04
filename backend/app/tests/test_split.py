@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 
 from pypdf import PdfReader, PdfWriter
+import pytest
 
 from app.services.split_service import split_pdf
 from app.utils.ranges import parse_ranges
@@ -29,3 +30,13 @@ def test_split_pdf(tmp_path):
     ONE = 1
     assert len(PdfReader(res[0]).pages) == TWO
     assert len(PdfReader(res[1]).pages) == ONE
+
+
+def test_split_pdf_corrupted_input_raises(tmp_path):
+    src = tmp_path / "src.pdf"
+    # Write invalid content (not a PDF)
+    src.write_bytes(b"this is not a pdf")
+    parts = [(1, 1)]
+    out = tmp_path / "out.pdf"
+    with pytest.raises(Exception):
+        split_pdf(str(src), parts, [str(out)])

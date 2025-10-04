@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import subprocess
 from types import SimpleNamespace
+import pytest
 
 from pypdf import PdfWriter
 
@@ -34,3 +35,16 @@ def test_compress_pdf_mocks_subprocess(tmp_path, monkeypatch):
     monkeypatch.setattr(subprocess, "run", fake_run)
     res = compress_pdf(str(src), str(out), "medium")
     assert os.path.exists(res)
+
+
+def test_compress_pdf_raises_on_subprocess_error(tmp_path, monkeypatch):
+    src = tmp_path / "src.pdf"
+    out = tmp_path / "out.pdf"
+    make_pdf(str(src), 1)
+
+    def fake_run(args, capture_output=False, **kwargs):  # noqa: ARG001
+        return SimpleNamespace(returncode=1, stderr=b"ghostscript error")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    with pytest.raises(RuntimeError):
+        compress_pdf(str(src), str(out), "low")

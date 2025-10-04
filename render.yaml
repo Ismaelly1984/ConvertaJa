@@ -6,7 +6,7 @@ services:
     autoDeploy: true
     dockerfilePath: docker/Dockerfile.api
     dockerContext: .
-    healthCheckPath: /docs
+    healthCheckPath: /api/health
     envVars:
       - key: PORT
         value: 8000
@@ -44,4 +44,3 @@ services:
   # - type: redis
   #   name: converta-redis
   #   ipAllowList: []
-

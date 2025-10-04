@@ -9,19 +9,38 @@ from collections.abc import Iterable
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
+from contextlib import asynccontextmanager
 
 from app.config import Settings, get_settings
-from app.routes import jobs, ocr, pdf_compress, pdf_merge, pdf_split, pdf_to_images
+from app.routes import health, jobs, ocr, pdf_compress, pdf_merge, pdf_split, pdf_to_images
 from app.services.cleanup_service import cleanup_tmp_dir_periodically
 from app.utils.logging import configure_logging, log_request
 from app.utils.security import add_csp_headers
 
 settings: Settings = get_settings()
 
+
+@asynccontextmanager
+async def lifespan_ctx(_app: FastAPI):
+    os.makedirs(settings.TMP_DIR, exist_ok=True)
+    th = threading.Thread(
+        target=cleanup_tmp_dir_periodically,
+        kwargs={
+            "tmp_dir": settings.TMP_DIR,
+            "ttl_minutes": settings.TTL_UPLOAD_MINUTES,
+            "interval_seconds": 60,
+        },
+        daemon=True,
+    )
+    th.start()
+    yield
+
+
 app = FastAPI(
     title="ConvertaJá API",
     version="0.1.0",
     description="API para conversão/manipulação de PDFs (MVP)",
+    lifespan=lifespan_ctx,
 )
 
 
@@ -102,19 +121,4 @@ app.include_router(pdf_compress.router, prefix="/api/pdf", tags=["pdf"])
 app.include_router(pdf_to_images.router, prefix="/api/pdf", tags=["pdf"])
 app.include_router(ocr.router, prefix="/api", tags=["ocr"])
 app.include_router(jobs.router, prefix="/api", tags=["jobs"])
-
-
-@app.on_event("startup")
-async def on_startup():
-    os.makedirs(settings.TMP_DIR, exist_ok=True)
-    # start cleanup thread
-    th = threading.Thread(
-        target=cleanup_tmp_dir_periodically,
-        kwargs={
-            "tmp_dir": settings.TMP_DIR,
-            "ttl_minutes": settings.TTL_UPLOAD_MINUTES,
-            "interval_seconds": 60,
-        },
-        daemon=True,
-    )
-    th.start()
+app.include_router(health.router, prefix="/api", tags=["health"])

@@ -41,6 +41,26 @@ Como rodar com Docker
 - `docker compose -f converta-ja/docker/docker-compose.yml up --build`
 - Sobe serviços: `api`, `worker`, `redis`. Volume temporário em `/tmp/convertaja` com limpeza automática por TTL.
 
+Nginx como proxy (opcional)
+- Suba com overlay incluindo Nginx em frente à API:
+  - `docker compose -f converta-ja/docker/docker-compose.yml -f converta-ja/docker/docker-compose.nginx.yml up --build`
+- Acesse via Nginx em `http://localhost:8080` (limite de 100MB no edge conforme `docker/nginx.conf`).
+
+Limite de upload (100MB)
+- App: valida uploads e retorna 413 quando excede limites.
+  - Por arquivo: `MAX_FILE_MB` (padrão 25MB via env).
+  - Para merge: soma dos arquivos ≤ 100MB (lógica no endpoint).
+- Proxy (recomendado): aplique o mesmo limite no edge para falhar mais cedo.
+  - Nginx (exemplo): use `docker/nginx.conf` com `client_max_body_size 100M;` e encaminhe para `api:8000`.
+    - Exemplo de serviço (overlay) no docker-compose:
+      - image: nginx:alpine
+      - volumes: `./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro`
+      - depends_on: `api`
+      - ports: `8080:80`
+  - Render: serviços Docker não expõem configuração do proxy gerenciado. Se precisar garantir 100MB no edge,
+    rode sua própria camada Nginx (ou aceite a validação na aplicação, que retorna 413 pelo header Content-Length).
+  - Observação: ajuste `MAX_FILE_MB` conforme a política desejada, mantendo o total de merge em 100MB.
+
 Testes
 - Backend: `cd converta-ja/backend && pytest -q`.
 - Cobertura esperada (services): >= 85% (indicativa no MVP; aumente conforme evolui).

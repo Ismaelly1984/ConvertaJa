@@ -15,9 +15,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+  const fallbackUrl = new URL('index.html', self.registration.scope);
   event.respondWith(
     caches.match(req).then((cached) =>
-      cached || fetch(req).catch(() => caches.match('/index.html'))
+      cached || fetch(req).catch(() => caches.match(fallbackUrl))
     )
   );
 });

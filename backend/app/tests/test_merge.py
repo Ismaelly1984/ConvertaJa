@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 
 from pypdf import PdfWriter
+import pytest
 
 from app.services.merge_service import merge_pdfs
 
@@ -23,3 +24,14 @@ def test_merge_pdfs(tmp_path):
     make_pdf(str(b), 3)
     res = merge_pdfs([str(a), str(b)], str(out))
     assert os.path.exists(res)
+
+
+def test_merge_pdfs_corrupted_input(tmp_path):
+    # One corrupted (non-PDF) file should cause the merge to fail
+    a = tmp_path / "a.pdf"
+    b = tmp_path / "b.pdf"
+    a.write_bytes(b"not a pdf")
+    make_pdf(str(b), 1)
+    out = tmp_path / "out.pdf"
+    with pytest.raises(Exception):
+        merge_pdfs([str(a), str(b)], str(out))
