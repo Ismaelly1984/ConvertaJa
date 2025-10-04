@@ -1,0 +1,54 @@
+# Reduce Docker build context size and keep images clean
+
+# VCS
+.git
+.github/
+
+# Node/Frontend
+frontend/
+node_modules/
+.parcel-cache/
+.turbo/
+
+# Python caches
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.ruff_cache/
+**/.mypy_cache/
+**/.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+
+# Build artifacts
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Docker
+*.pid
+docker/backend/.pytest_cache/
+
+# Project-specific
+render.yaml
