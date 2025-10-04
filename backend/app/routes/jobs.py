@@ -51,7 +51,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
                 raise HTTPException(status_code=415, detail="Apenas PDFs são aceitos")
             data = await f.read()
             inputs.append(save_upload(tmp, f.filename, data))
-        from app.workers import tasks  # import tardio
+        from app.workers import tasks  # noqa: PLC0415  # import tardio
         res = tasks.task_merge.apply_async(kwargs={"tmp_dir": tmp, "inputs": inputs})
         return {"jobId": res.id}
 
@@ -69,7 +69,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
             pr = parse_ranges(ranges, total)
         except RangeParseError as e:
             raise HTTPException(status_code=400, detail=str(e)) from e
-        from app.workers import tasks  # import tardio
+        from app.workers import tasks  # noqa: PLC0415  # import tardio
         res = tasks.task_split.apply_async(
             kwargs={"tmp_dir": tmp, "input_path": input_path, "ranges": pr}
         )
@@ -84,7 +84,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
             raise HTTPException(status_code=400, detail="quality inválido")
         data = await file.read()
         input_path = save_upload(tmp, file.filename, data)
-        from app.workers import tasks  # import tardio
+        from app.workers import tasks  # noqa: PLC0415  # import tardio
         res = tasks.task_compress.apply_async(
             kwargs={
                 "tmp_dir": tmp,
@@ -103,7 +103,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
             raise HTTPException(status_code=400, detail="Parâmetros inválidos")
         data = await file.read()
         input_path = save_upload(tmp, file.filename, data)
-        from app.workers import tasks  # import tardio
+        from app.workers import tasks  # noqa: PLC0415  # import tardio
         res = tasks.task_to_images.apply_async(
             kwargs={
                 "tmp_dir": tmp,
@@ -124,7 +124,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
         langs = (lang or "por").split("+")
         data = await file.read()
         input_path = save_upload(tmp, file.filename, data)
-        from app.workers import tasks  # import tardio
+        from app.workers import tasks  # noqa: PLC0415  # import tardio
         res = tasks.task_ocr.apply_async(
             kwargs={
                 "tmp_dir": tmp,
@@ -140,9 +140,9 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
 @router.get("/jobs/{job_id}")
 async def job_status(job_id: str):
     try:
-        from app.workers.celery_app import celery as _celery  # import tardio
-    except Exception:
-        raise HTTPException(status_code=503, detail="Fila de jobs indisponível")
+        from app.workers.celery_app import celery as _celery  # noqa: PLC0415  # import tardio
+    except Exception as err:  # noqa: BLE001
+        raise HTTPException(status_code=503, detail="Fila de jobs indisponível") from err
     ar = _celery.AsyncResult(job_id)
     if ar.state == "PENDING":
         return {"status": "queued", "progress": 0}

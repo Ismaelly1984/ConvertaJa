@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import os
 
-from pypdf import PdfWriter
 import pytest
+from pypdf import PdfWriter
+from pypdf.errors import PdfReadError
 
 from app.services.merge_service import merge_pdfs
 
@@ -33,5 +34,5 @@ def test_merge_pdfs_corrupted_input(tmp_path):
     a.write_bytes(b"not a pdf")
     make_pdf(str(b), 1)
     out = tmp_path / "out.pdf"
-    with pytest.raises(Exception):
+    with pytest.raises(PdfReadError):
         merge_pdfs([str(a), str(b)], str(out))

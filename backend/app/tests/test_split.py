@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import os
 
-from pypdf import PdfReader, PdfWriter
 import pytest
+from pypdf import PdfReader, PdfWriter
+from pypdf.errors import PdfReadError
 
 from app.services.split_service import split_pdf
 from app.utils.ranges import parse_ranges
@@ -38,5 +39,5 @@ def test_split_pdf_corrupted_input_raises(tmp_path):
     src.write_bytes(b"this is not a pdf")
     parts = [(1, 1)]
     out = tmp_path / "out.pdf"
-    with pytest.raises(Exception):
+    with pytest.raises(PdfReadError):
         split_pdf(str(src), parts, [str(out)])

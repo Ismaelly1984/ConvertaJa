@@ -5,11 +5,11 @@ import threading
 import time
 import uuid
 from collections.abc import Iterable
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
-from contextlib import asynccontextmanager
 
 from app.config import Settings, get_settings
 from app.routes import health, jobs, ocr, pdf_compress, pdf_merge, pdf_split, pdf_to_images

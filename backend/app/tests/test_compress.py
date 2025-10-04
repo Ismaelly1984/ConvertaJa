@@ -3,9 +3,9 @@ from __future__ import annotations
 import os
 import subprocess
 from types import SimpleNamespace
-import pytest
 
 from pypdf import PdfWriter
+import pytest
 
 from app.services.compress_service import compress_pdf
 
