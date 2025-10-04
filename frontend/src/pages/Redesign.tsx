@@ -1,0 +1,413 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { api } from '../lib/api'
+import '../styles/redesign.css'
+
+type Tool = 'merge' | 'split' | 'compress' | 'images' | 'ocr'
+
+type FileLike = File & { name: string; size: number }
+
+const tools: Record<Tool, { title: string; description: string }> = {
+  merge: { title: 'Unir PDFs', description: 'Combine vários PDFs na ordem desejada' },
+  split: { title: 'Dividir PDF', description: 'Separe páginas por intervalos: 1-3,5,7-8' },
+  compress: { title: 'Comprimir PDF', description: 'Reduza o tamanho do PDF (low/medium/high)' },
+  images: { title: 'PDF → Imagens', description: 'Gere PNG por página no DPI desejado' },
+  ocr: { title: 'OCR', description: 'Extraia texto de PDF/Imagem (pt-BR/EN)' },
+}
+
+function formatFileSize(bytes: number): string {
+  if (!bytes) return '0 Bytes'
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`
+}
+
+export default function Redesign() {
+  const [currentTool, setCurrentTool] = useState<Tool>('merge')
+  const [selectedFiles, setSelectedFiles] = useState<FileLike[]>([])
+  const [progress, setProgress] = useState(0)
+  const [processing, setProcessing] = useState(false)
+  const [success, setSuccess] = useState<{ url: string; filename: string } | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  // Parameters
+  const [ranges, setRanges] = useState('1-3,5')
+  const [quality, setQuality] = useState<'low' | 'medium' | 'high'>('medium')
+  const [imgFormat, setImgFormat] = useState<'png' | 'jpg'>('png')
+  const [dpi, setDpi] = useState(150)
+  const [lang, setLang] = useState('por')
+
+  useEffect(() => {
+    // simple hero reveal without external libs
+    const t = setTimeout(() => {
+      document.getElementById('hero-title')?.classList.remove('opacity-0')
+      document.getElementById('hero-subtitle')?.classList.remove('opacity-0')
+      document.getElementById('hero-features')?.classList.remove('opacity-0')
+    }, 50)
+    return () => clearTimeout(t)
+  }, [])
+
+  const canProcess = useMemo(() => {
+    if (processing) return false
+    if (currentTool === 'merge') return selectedFiles.length >= 2
+    return selectedFiles.length >= 1
+  }, [processing, currentTool, selectedFiles])
+
+  function onSelectTool(tool: Tool) {
+    setCurrentTool(tool)
+    setSuccess(null)
+    setProgress(0)
+    document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  function openPicker() {
+    fileInputRef.current?.click()
+  }
+
+  function handleFiles(files: FileList | File[]) {
+    const list = Array.from(files) as FileLike[]
+    setSelectedFiles(list)
+    setSuccess(null)
+  }
+
+  function removeFile(idx: number) {
+    const next = [...selectedFiles]
+    next.splice(idx, 1)
+    setSelectedFiles(next)
+    if (next.length === 0) {
+      clearSelection()
+    }
+  }
+
+  function clearSelection() {
+    setSelectedFiles([])
+    setProcessing(false)
+    setProgress(0)
+    setSuccess(null)
+  }
+
+  function startProgress() {
+    setProcessing(true)
+    setProgress(0)
+    const start = Date.now()
+    const id = setInterval(() => {
+      const elapsed = Date.now() - start
+      // ease towards 90%, complete on success
+      const next = Math.min(90, 5 + Math.sqrt(elapsed / 6))
+      setProgress(next)
+    }, 200)
+    return () => clearInterval(id)
+  }
+
+  async function processFiles() {
+    if (!canProcess) return
+    const stop = startProgress()
+    try {
+      let resp: Response
+      if (currentTool === 'merge') {
+        resp = await api.merge(selectedFiles)
+        await handleBinary(resp, 'merged.pdf')
+      } else if (currentTool === 'split') {
+        const file = selectedFiles[0]
+        resp = await api.split(file, ranges)
+        await handleBinary(resp, 'split.zip')
+      } else if (currentTool === 'compress') {
+        const file = selectedFiles[0]
+        resp = await api.compress(file, quality)
+        await handleBinary(resp, 'compressed.pdf')
+      } else if (currentTool === 'images') {
+        const file = selectedFiles[0]
+        resp = await api.toImages(file, imgFormat, dpi)
+        await handleBinary(resp, 'images.zip')
+      } else {
+        const file = selectedFiles[0]
+        resp = await api.ocr(file, lang)
+        if (!resp.ok) throw new Error(`Erro ${resp.status}`)
+        const data: { text: string; id: string } = await resp.json()
+        const url = `/api/ocr/download/${data.id}`
+        setSuccess({ url, filename: `${data.id}.txt` })
+      }
+      setProgress(100)
+    } catch (err) {
+      console.error(err)
+      alert('Falha ao processar arquivos. Verifique os parâmetros e tente novamente.')
+    } finally {
+      stop()
+      setProcessing(false)
+    }
+  }
+
+  async function handleBinary(resp: Response, fallbackName: string) {
+    if (!resp.ok) {
+      const txt = await resp.text().catch(() => '')
+      throw new Error(txt || `Erro ${resp.status}`)
+    }
+    const ct = (resp.headers.get('content-type') || '').toLowerCase()
+    let filename = fallbackName
+    const cd = resp.headers.get('content-disposition') || ''
+    const m = /filename="?([^";]+)"?/i.exec(cd)
+    if (m?.[1]) filename = m[1]
+    // build blob url
+    const blob = await resp.blob()
+    const url = URL.createObjectURL(blob)
+    setSuccess({ url, filename })
+  }
+
+  return (
+    <div className="bg-gray-50 text-gray-800 min-h-screen">
+      {/* Nav */}
+      <nav className="gradient-bg text-white py-4 sticky top-0 z-50">
+        <div className="container mx-auto px-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" />
+                  <path d="M6 8h8v2H6V8zm0 3h8v1H6v-1z" />
+                </svg>
+              </div>
+              <h1 className="text-2xl font-bold">ConvertaJá</h1>
+            </div>
+            <div className="flex items-center space-x-2">
+              <a href="#" className="bg-orange-500 hover:bg-orange-600 px-3 py-2 rounded-lg transition-colors">Português</a>
+              <a href="#" className="bg-gray-600 hover:bg-gray-700 px-3 py-2 rounded-lg transition-colors">English</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="gradient-bg text-white py-16 relative overflow-hidden">
+        <div className="floating-particle" style={{ top: '10%', left: '10%' }} />
+        <div className="floating-particle" style={{ top: '20%', right: '15%' }} />
+        <div className="floating-particle" style={{ bottom: '30%', left: '20%' }} />
+        <div className="floating-particle" style={{ top: '40%', right: '25%' }} />
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center max-w-4xl mx-auto">
+            <h2 id="hero-title" className="text-5xl font-bold mb-6 opacity-0">Ferramentas de PDF Simples e Rápidas</h2>
+            <p id="hero-subtitle" className="text-xl opacity-90 mb-8 opacity-0">Unir, Dividir, Comprimir, Converter para Imagens e OCR (pt-BR/EN) — até 25MB grátis</p>
+            <div id="hero-features" className="grid grid-cols-2 md:grid-cols-5 gap-4 opacity-0">
+              {['📄 Unir', '✂️ Dividir', '🗜️ Comprimir', '🖼️ Imagens', '🔍 OCR'].map((t) => (
+                <div key={t} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center hover-lift">
+                  <div className="text-2xl mb-2">{t.split(' ')[0]}</div>
+                  <div className="text-sm">{t.split(' ')[1]}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Tools */}
+      <section className="py-16">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-center mb-12">Escolha sua Ferramenta</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+              {(
+                [
+                  { key: 'merge', color: 'blue', title: 'Unir PDFs', desc: tools.merge.description },
+                  { key: 'split', color: 'orange', title: 'Dividir PDF', desc: tools.split.description },
+                  { key: 'compress', color: 'green', title: 'Comprimir PDF', desc: tools.compress.description },
+                  { key: 'images', color: 'purple', title: 'PDF → Imagens', desc: tools.images.description },
+                  { key: 'ocr', color: 'yellow', title: 'OCR', desc: tools.ocr.description },
+                ] as Array<{ key: Tool; color: string; title: string; desc: string }>
+              ).map(({ key, color, title, desc }) => (
+                <div
+                  key={key}
+                  data-tool={key}
+                  onClick={() => onSelectTool(key)}
+                  className={`tool-card rounded-xl p-6 hover-lift cursor-pointer ${currentTool === key ? 'tool-active' : ''}`}
+                >
+                  <div className={`w-16 h-16 bg-${color}-100 rounded-xl flex items-center justify-center mb-4`}>
+                    <svg className={`w-8 h-8 text-${color}-600`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">{title}</h3>
+                  <p className="text-gray-600 mb-4">{desc}</p>
+                  <div className={`flex items-center text-sm text-${color}-600`}>
+                    <span>Abrir</span>
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Upload */}
+      <section id="upload-section" className="py-16 bg-gray-100">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold mb-2">{tools[currentTool].title}</h3>
+                <p className="text-gray-600">{tools[currentTool].description}</p>
+              </div>
+
+              {/* Parameters */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {currentTool === 'split' && (
+                  <div>
+                    <label className="text-sm font-medium">Intervalos (ex: 1-3,5,7-8)</label>
+                    <input value={ranges} onChange={(e) => setRanges(e.target.value)} className="mt-1 w-full border rounded-md px-3 py-2" />
+                  </div>
+                )}
+                {currentTool === 'compress' && (
+                  <div>
+                    <label className="text-sm font-medium">Qualidade</label>
+                    <div className="mt-1 flex gap-3">
+                      {(['low', 'medium', 'high'] as const).map((q) => (
+                        <label key={q} className="flex items-center gap-1 text-sm">
+                          <input type="radio" name="quality" checked={quality === q} onChange={() => setQuality(q)} />
+                          {q}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {currentTool === 'images' && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium">Formato</label>
+                      <select value={imgFormat} onChange={(e) => setImgFormat(e.target.value as 'png' | 'jpg')} className="mt-1 w-full border rounded-md px-3 py-2">
+                        <option value="png">PNG</option>
+                        <option value="jpg">JPG</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">DPI</label>
+                      <input type="number" min={72} max={600} value={dpi} onChange={(e) => setDpi(parseInt(e.target.value || '150', 10))} className="mt-1 w-full border rounded-md px-3 py-2" />
+                    </div>
+                  </>
+                )}
+                {currentTool === 'ocr' && (
+                  <div>
+                    <label className="text-sm font-medium">Idioma</label>
+                    <select value={lang} onChange={(e) => setLang(e.target.value)} className="mt-1 w-full border rounded-md px-3 py-2">
+                      <option value="por">Português</option>
+                      <option value="eng">English</option>
+                      <option value="por+eng">Português+Inglês</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Upload zone */}
+              <div
+                id="upload-zone"
+                className="upload-zone rounded-xl p-12 text-center mb-6"
+                onClick={openPicker}
+                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('dragover') }}
+                onDragLeave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('dragover') }}
+                onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('dragover'); handleFiles(e.dataTransfer.files) }}
+              >
+                <div className="mb-6">
+                  <svg className="w-16 h-16 text-blue-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <h4 className="text-xl font-semibold mb-2">Arraste seus arquivos aqui</h4>
+                  <p className="text-gray-600 mb-4">ou clique para selecionar</p>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">Selecionar Arquivos</button>
+                  <input ref={fileInputRef} type="file" multiple={currentTool === 'merge'} accept={currentTool === 'ocr' ? '.pdf,.png,.jpg,.jpeg' : '.pdf'} onChange={(e) => e.target.files && handleFiles(e.target.files)} className="hidden" />
+                </div>
+                <div className="text-sm text-gray-500">
+                  <p>Tamanho máximo: 25MB por arquivo • Formatos: {currentTool === 'ocr' ? 'PDF/JPG/PNG' : 'PDF'}</p>
+                </div>
+              </div>
+
+              {/* File list */}
+              {selectedFiles.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="font-semibold mb-3">Arquivos Selecionados:</h4>
+                  <div className="space-y-2">
+                    {selectedFiles.map((f, idx) => (
+                      <div key={idx} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" />
+                            <path d="M6 8h8v2H6V8zm0 3h8v1H6v-1z" />
+                          </svg>
+                          <div>
+                            <div className="font-medium">{f.name}</div>
+                            <div className="text-sm text-gray-500">{formatFileSize(f.size)}</div>
+                          </div>
+                        </div>
+                        <button onClick={() => removeFile(idx)} className="text-red-500 hover:text-red-700">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Progress */}
+              {processing && (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Processando...</span>
+                    <span className="text-sm text-gray-600">{Math.round(progress)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div className="progress-bar h-3 rounded-full" style={{ width: `${progress}%` }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex justify-center gap-3">
+                <button disabled={!canProcess} onClick={processFiles} className="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg transition-colors">
+                  Processar Arquivos
+                </button>
+                <button onClick={clearSelection} className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition-colors">Limpar</button>
+              </div>
+
+              {/* Success */}
+              {success && (
+                <div className="mt-8 p-6 bg-green-50 border-l-4 border-green-400 rounded-lg success-animation">
+                  <div className="flex items-center">
+                    <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <h4 className="font-semibold text-green-800">Processamento Concluído!</h4>
+                      <p className="text-green-700">Seu arquivo está pronto para download.</p>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <a href={success.url} download={success.filename} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors">Baixar Arquivo</a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="gradient-bg text-white py-8">
+        <div className="container mx-auto px-6 text-center">
+          <div className="flex items-center justify-center space-x-3 mb-2">
+            <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" />
+                <path d="M6 8h8v2H6V8zm0 3h8v1H6v-1z" />
+              </svg>
+            </div>
+            <span className="text-xl font-bold">ConvertaJá</span>
+          </div>
+          <p className="opacity-75 mb-1">©2025 ConvertaJá — Ferramentas de PDF Online</p>
+          <p className="text-sm opacity-60">Processamento seguro e privado • Sem registro necessário</p>
+        </div>
+      </footer>
+    </div>
+  )
+}
+

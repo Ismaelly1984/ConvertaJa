@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Redesign from './pages/Redesign'
 import './App.css'
 import Modal from './components/Modal'
 import { api } from './lib/api'
@@ -97,6 +98,12 @@ const features: {
 ]
 
 export default function App() {
+  // Allow previewing the redesign mockup without changing current UI
+  const hash = typeof window !== 'undefined' ? window.location.hash : ''
+  const search = typeof window !== 'undefined' ? window.location.search : ''
+  const params = new URLSearchParams(search)
+  const useRedesign = hash === '#redesign' || params.get('ui') === 'redesign'
+  if (useRedesign) return <Redesign />
   const [active, setActive] = useState<Tool | null>(null)
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [mergeTasks, setMergeTasks] = useState<{
