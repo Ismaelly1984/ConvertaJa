@@ -53,6 +53,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
             data = await f.read()
             inputs.append(save_upload(tmp, f.filename, data))
         from app.workers import tasks  # noqa: PLC0415  # import tardio
+
         res = tasks.task_merge.apply_async(kwargs={"tmp_dir": tmp, "inputs": inputs})
         return {"jobId": res.id}
 
@@ -71,6 +72,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
         except RangeParseError as e:
             raise HTTPException(status_code=400, detail=str(e)) from e
         from app.workers import tasks  # noqa: PLC0415  # import tardio
+
         res = tasks.task_split.apply_async(
             kwargs={"tmp_dir": tmp, "input_path": input_path, "ranges": pr}
         )
@@ -86,6 +88,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
         data = await file.read()
         input_path = save_upload(tmp, file.filename, data)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
+
         res = tasks.task_compress.apply_async(
             kwargs={
                 "tmp_dir": tmp,
@@ -105,6 +108,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
         data = await file.read()
         input_path = save_upload(tmp, file.filename, data)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
+
         res = tasks.task_to_images.apply_async(
             kwargs={
                 "tmp_dir": tmp,
@@ -126,6 +130,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
         data = await file.read()
         input_path = save_upload(tmp, file.filename, data)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
+
         res = tasks.task_ocr.apply_async(
             kwargs={
                 "tmp_dir": tmp,
