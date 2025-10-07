@@ -34,7 +34,7 @@ function formatFileSize(bytes: number): string {
 }
 
 export default function Redesign() {
-  const { locale, setLocale, i18n } = useI18n()
+  const { locale, i18n } = useI18n()
   const ogImage = '/icons/og-image.png'
   const pageTitle = i18n.pageTitle
   const pageDescription = i18n.pageDescription

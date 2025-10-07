@@ -40,7 +40,7 @@ type Ctx = {
   i18n: I18nDict
 }
 
-const Ctx = createContext<Ctx | null>(null)
+const I18nCtx = createContext<Ctx | null>(null)
 
 function detectInitialLocale(): Locale {
   try {
@@ -61,7 +61,9 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       const sp = new URLSearchParams(window.location.search)
       sp.set('lang', l)
       window.history.replaceState({}, '', `${window.location.pathname}?${sp.toString()}`)
-    } catch {}
+    } catch {
+      return
+    }
   }
 
   const DICTS = useMemo(() => ({
@@ -163,12 +165,11 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<Ctx>(() => ({ locale, setLocale, i18n: DICTS[locale] }), [locale, DICTS])
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>
+  return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>
 }
 
 export function useI18n() {
-  const ctx = useContext(Ctx)
+  const ctx = useContext(I18nCtx)
   if (!ctx) throw new Error('useI18n must be used within I18nProvider')
   return ctx
 }
-

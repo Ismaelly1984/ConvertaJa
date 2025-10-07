@@ -4,7 +4,7 @@ import { useI18n } from '../i18n/I18nProvider'
 type Props = { variant?: 'default' | 'onGradient' }
 
 export default function Navbar({ variant = 'default' }: Props) {
-  const { i18n, locale, setLocale } = useI18n()
+  const { locale, setLocale } = useI18n()
   const onGradient = variant === 'onGradient'
   const navClass = onGradient
     ? 'sticky top-0 z-50 w-full bg-transparent text-white'
