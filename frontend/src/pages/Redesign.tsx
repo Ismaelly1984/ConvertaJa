@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../i18n/I18nProvider'
 import { api } from '../lib/api'
 import '../styles/redesign.css'
+import Navbar from '../components/Navbar'
 
 type Tool = 'merge' | 'split' | 'compress' | 'images' | 'ocr'
 
@@ -239,33 +240,7 @@ export default function Redesign() {
       {/* JSON-LD for SEO */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       {/* Nav */}
-      <nav className="gradient-bg glass text-white py-4 sticky top-0 z-50" role="navigation" aria-label="Barra de navegação">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-                  <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" />
-                  <path d="M6 8h8v2H6V8zm0 3h8v1H6v-1z" />
-                </svg>
-              </div>
-              <h1 className="text-2xl font-bold">ConvertaJá</h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <a
-                href="#"
-                onClick={(e) => { e.preventDefault(); setLocale('pt') }}
-                className={`${locale === 'pt' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600 hover:bg-gray-700'} px-3 py-2 rounded-lg transition-colors`}
-              >{i18n.nav.pt}</a>
-              <a
-                href="#"
-                onClick={(e) => { e.preventDefault(); setLocale('en') }}
-                className={`${locale === 'en' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600 hover:bg-gray-700'} px-3 py-2 rounded-lg transition-colors`}
-              >{i18n.nav.en}</a>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero */}
       <section className="gradient-bg text-white py-16 relative overflow-hidden" role="banner" aria-label="Apresentação">
