@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="60%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#fb923c"/>
+    </linearGradient>
+    <filter id="blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="30"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <g opacity="0.25" filter="url(#blur)">
+    <circle cx="200" cy="160" r="120" fill="#ffffff"/>
+    <circle cx="1000" cy="440" r="140" fill="#ffffff"/>
+  </g>
+  <g fill="#ffffff">
+    <text x="80" y="300" font-family="Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="88" font-weight="800">ConvertaJá</text>
+    <text x="80" y="380" font-family="Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="34" opacity="0.9">Ferramentas de PDF simples e rápidas</text>
+  </g>
+  <g fill="#ffffff" opacity="0.55">
+    <text x="80" y="470" font-family="Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24">Unir • Dividir • Comprimir • PDF → Imagens • OCR</text>
+  </g>
+</svg>

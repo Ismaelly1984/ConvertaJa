@@ -65,11 +65,21 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
   border-color: rgba(251, 146, 60, 0.55) !important;
   box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.25), 0 14px 32px rgba(2, 6, 23, 0.14);
   transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
 }
 
 /* Generic hover lift helper */
 .hover-lift { transition: transform 0.25s ease, box-shadow 0.25s ease; }
 .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 24px rgba(2, 6, 23, 0.12); }
+
+/* Keyboard focus for accessibility */
+.tool-card:focus-visible {
+  outline: 3px solid #fb923c;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(251, 146, 60, 0.18);
+}
 
 /* ===== Upload Zone ===== */
 .upload-zone {

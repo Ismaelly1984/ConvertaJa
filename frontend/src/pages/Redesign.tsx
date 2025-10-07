@@ -234,6 +234,8 @@ export default function Redesign() {
                   data-tool={key}
                   onClick={() => onSelectTool(key)}
                   className={`tool-card rounded-xl p-6 hover-lift cursor-pointer ${currentTool === key ? 'tool-active' : ''}`}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className={`w-16 h-16 ${colorBg[color]} rounded-xl flex items-center justify-center mb-4`}>
                     <svg className={`w-8 h-8 ${colorText[color]}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
