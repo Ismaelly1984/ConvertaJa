@@ -4,57 +4,84 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ConvertaJá — Ferramentas de PDF Online</title>
+
+    <!-- SEO -->
     <meta name="description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://ismaelly1984.github.io/ConvertaJa/" />
+
+    <!-- Open Graph -->
     <meta property="og:title" content="ConvertaJá — Ferramentas de PDF Online" />
     <meta property="og:description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="website" />
     <meta property="og:url" content="https://ismaelly1984.github.io/ConvertaJa/" />
     <meta property="og:image" content="https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png" />
+    <meta property="og:image:alt" content="Interface do ConvertaJá — Ferramentas de PDF Online" />
     <meta property="og:site_name" content="ConvertaJá" />
     <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="ConvertaJá — Ferramentas de PDF Online" />
     <meta name="twitter:description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
     <meta name="twitter:image" content="https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png" />
-    <meta name="robots" content="index, follow" />
+    <meta name="twitter:image:alt" content="Interface do ConvertaJá — Ferramentas de PDF Online" />
+    <meta name="twitter:site" content="@ismaeldev" />
+
+    <!-- Structured Data -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": "ConvertaJá — Ferramentas de PDF Online",
-        "description": "Unir, dividir, converter e comprimir PDFs online em segundos.",
-        "inLanguage": "pt-BR",
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": "https://ismaelly1984.github.io/ConvertaJa/"
-        },
-        "image": [
-          "https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png"
-        ],
+        "@type": "WebApplication",
+        "name": "ConvertaJá",
+        "url": "https://ismaelly1984.github.io/ConvertaJa/",
+        "description": "Ferramentas online para unir, dividir, comprimir, converter PDFs e OCR.",
+        "applicationCategory": "PDFConverter",
+        "operatingSystem": "Web",
         "author": {
-          "@type": "Organization",
-          "name": "ConvertaJá"
+          "@type": "Person",
+          "name": "Ismael Nunes dos Santos",
+          "url": "https://ismaelly1984.github.io/portfolio/"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "ConvertaJá"
-        }
+          "name": "ConvertaJá",
+          "logo": "https://ismaelly1984.github.io/ConvertaJa/icons/icon-512.png"
+        },
+        "datePublished": "2025-10-07",
+        "screenshot": "https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png"
       }
     </script>
-    <link rel="canonical" href="https://ismaelly1984.github.io/ConvertaJa/" />
+
+    <!-- PWA -->
     <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ConvertaJá" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
     <link rel="manifest" href="manifest.webmanifest" />
+
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
   </head>
+
   <body>
     <div id="root"></div>
+
     <script type="module" src="/src/main.tsx"></script>
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('sw.js').catch(() => {});
+          navigator.serviceWorker
+            .register('/ConvertaJa/sw.js')
+            .then(reg => console.log('Service Worker registrado:', reg.scope))
+            .catch(err => console.warn('Falha no Service Worker:', err));
         });
       }
     </script>
   </body>
-  </html>
+</html>
