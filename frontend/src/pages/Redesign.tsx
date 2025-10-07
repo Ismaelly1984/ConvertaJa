@@ -171,12 +171,12 @@ export default function Redesign() {
   return (
     <div className="bg-gray-50 text-gray-800 min-h-screen">
       {/* Nav */}
-      <nav className="gradient-bg text-white py-4 sticky top-0 z-50">
+      <nav className="gradient-bg glass text-white py-4 sticky top-0 z-50" role="navigation" aria-label="Barra de navegação">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
                   <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" />
                   <path d="M6 8h8v2H6V8zm0 3h8v1H6v-1z" />
                 </svg>
@@ -192,7 +192,7 @@ export default function Redesign() {
       </nav>
 
       {/* Hero */}
-      <section className="gradient-bg text-white py-16 relative overflow-hidden">
+      <section className="gradient-bg text-white py-16 relative overflow-hidden" role="banner" aria-label="Apresentação">
         <div className="floating-particle" style={{ top: '10%', left: '10%' }} />
         <div className="floating-particle" style={{ top: '20%', right: '15%' }} />
         <div className="floating-particle" style={{ bottom: '30%', left: '20%' }} />
@@ -200,7 +200,7 @@ export default function Redesign() {
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <h2 id="hero-title" className="text-5xl font-bold mb-6 opacity-0">Ferramentas de PDF Simples e Rápidas</h2>
+            <h2 id="hero-title" className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 opacity-0" aria-label="Ferramentas de PDF Simples e Rápidas">Ferramentas de PDF Simples e Rápidas</h2>
             <p id="hero-subtitle" className="text-xl opacity-90 mb-8 opacity-0">Unir, Dividir, Comprimir, Converter para Imagens e OCR (pt-BR/EN) — até 25MB grátis</p>
             <div id="hero-features" className="grid grid-cols-2 md:grid-cols-5 gap-4 opacity-0">
               {['📄 Unir', '✂️ Dividir', '🗜️ Comprimir', '🖼️ Imagens', '🔍 OCR'].map((t) => (
@@ -323,12 +323,12 @@ export default function Redesign() {
                 onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('dragover'); handleFiles(e.dataTransfer.files) }}
               >
                 <div className="mb-6">
-                  <svg className="w-16 h-16 text-blue-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-16 h-16 text-blue-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                   <h4 className="text-xl font-semibold mb-2">Arraste seus arquivos aqui</h4>
                   <p className="text-gray-600 mb-4">ou clique para selecionar</p>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">Selecionar Arquivos</button>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors" aria-label="Selecionar arquivos para upload">Selecionar Arquivos</button>
                   <input ref={fileInputRef} type="file" multiple={currentTool === 'merge'} accept={currentTool === 'ocr' ? '.pdf,.png,.jpg,.jpeg' : '.pdf'} onChange={(e) => e.target.files && handleFiles(e.target.files)} className="hidden" />
                 </div>
                 <div className="text-sm text-gray-500">
@@ -344,7 +344,7 @@ export default function Redesign() {
                     {selectedFiles.map((f, idx) => (
                       <div key={idx} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
                         <div className="flex items-center space-x-3">
-                          <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
                             <path d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" />
                             <path d="M6 8h8v2H6V8zm0 3h8v1H6v-1z" />
                           </svg>
@@ -354,7 +354,7 @@ export default function Redesign() {
                           </div>
                         </div>
                         <button onClick={() => removeFile(idx)} className="text-red-500 hover:text-red-700">
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </button>
@@ -366,7 +366,7 @@ export default function Redesign() {
 
               {/* Progress */}
               {processing && (
-                <div className="mb-6">
+                <div className="mb-6" aria-live="polite" aria-busy={processing}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium">Processando...</span>
                     <span className="text-sm text-gray-600">{Math.round(progress)}%</span>

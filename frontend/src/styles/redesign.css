@@ -8,6 +8,14 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #fb923c 100%);
 }
 
+/* Glass effect for translucent bars/cards */
+.glass {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.78), rgba(30, 41, 59, 0.68) 60%, rgba(251, 146, 60, 0.36));
+  backdrop-filter: saturate(150%) blur(8px);
+  -webkit-backdrop-filter: saturate(150%) blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 /* ===== Hero reveal ===== */
 #hero-title,
 #hero-subtitle,
@@ -42,7 +50,9 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
 
 /* ===== Cards (Tools) ===== */
 .tool-card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
   border: 1px solid rgba(2, 6, 23, 0.06);
   box-shadow: 0 2px 10px rgba(2, 6, 23, 0.04);
   transform: translateY(0);
