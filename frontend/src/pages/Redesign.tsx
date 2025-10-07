@@ -240,7 +240,7 @@ export default function Redesign() {
       {/* JSON-LD for SEO */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       {/* Nav */}
-      <Navbar />
+      <Navbar variant="onGradient" />
 
       {/* Hero */}
       <section className="gradient-bg text-white py-16 relative overflow-hidden" role="banner" aria-label="Apresentação">
