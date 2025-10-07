@@ -7,7 +7,7 @@ ConvertaJá — Conversor e Ferramentas de PDF Online
 Resumo
 - MVP completo para conversão/manipulação de PDFs: unir, dividir, comprimir, PDF→imagens e OCR (pt-BR/en).
 - Backend: FastAPI + Celery/Redis para jobs pesados (compressão, OCR, pdf→imagens).
-- Frontend: React + Vite + Tailwind com upload, fila local, progresso, toasts e PWA básico.
+- Frontend: React + Vite + Tailwind com upload (drag & drop), barra de progresso, PWA, badge de versão visível e redesign como UI padrão.
 - Infra: Docker + docker-compose (api, worker, redis). Testes com pytest/httpx; CI GitHub Actions.
 
 Decisões de MVP (simplicidade/robustez)
@@ -69,9 +69,14 @@ Testes
 CI/CD
 - Workflow: `.github/workflows/ci.yml` (GitHub Actions)
   - Backend (pytest): instala deps nativas, faz lint (ruff), format check (black) e executa testes com cobertura (artefato `backend-coverage-xml`).
-  - Frontend (Vite): instala deps, roda ESLint e `npm run build` (artefato `frontend-dist`).
+  - Frontend (Vite): instala deps, roda ESLint e `npm run build` (artefato `frontend-dist`). O build injeta `VITE_APP_VERSION` no footer da UI.
   - Deploy GitHub Pages (main): publica o conteúdo de `frontend/dist` gerado pelo job de frontend.
   - Publicação de imagens Docker (GHCR, main): constrói e publica imagens do backend.
+
+Frontend — Observações
+- UI redesign ativa por padrão.
+- Service Worker atualizado (v2) com estratégia network-first para `index.html` a fim de evitar conteúdo desatualizado.
+- Se após deploy o site não refletir a nova UI, force refresh (Ctrl+F5) ou, em DevTools → Application → Service Workers, clique em “Unregister” e recarregue.
 
 - Habilitar GitHub Pages
   - No GitHub: Settings → Pages → Build and deployment → Source: GitHub Actions.
