@@ -38,6 +38,11 @@ function formatFileSize(bytes: number): string {
 }
 
 export default function Redesign() {
+  // SEO constants
+  const pageTitle = 'ConvertaJá — Ferramentas de PDF Online'
+  const pageDescription = 'Unir, dividir, converter e comprimir PDFs online em segundos.'
+  const ogImage = '/icons/og-image.png'
+
   const [currentTool, setCurrentTool] = useState<Tool>('merge')
   const [selectedFiles, setSelectedFiles] = useState<FileLike[]>([])
   const [progress, setProgress] = useState(0)
@@ -61,6 +66,70 @@ export default function Redesign() {
       document.getElementById('hero-features')?.classList.remove('opacity-0')
     }, 50)
     return () => clearTimeout(t)
+  }, [])
+
+  // Basic SEO/SMO meta tags (runtime upsert into <head>)
+  useEffect(() => {
+    function upsertMeta(selector: string, attrs: Record<string, string>) {
+      let el = document.head.querySelector<HTMLMetaElement>(selector)
+      if (!el) {
+        el = document.createElement('meta')
+        document.head.appendChild(el)
+      }
+      Object.entries(attrs).forEach(([k, v]) => el!.setAttribute(k, v))
+    }
+    function upsertLink(rel: string, href: string) {
+      let el = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`)
+      if (!el) {
+        el = document.createElement('link')
+        el.setAttribute('rel', rel)
+        document.head.appendChild(el)
+      }
+      el.setAttribute('href', href)
+    }
+
+    const url = window.location.href
+    document.title = pageTitle
+    document.documentElement.lang = 'pt-BR'
+
+    // Standard
+    upsertMeta('meta[name="description"]', { name: 'description', content: pageDescription })
+    upsertMeta('meta[name="robots"]', { name: 'robots', content: 'index, follow' })
+    upsertLink('canonical', url)
+
+    // Open Graph
+    upsertMeta('meta[property="og:title"]', { property: 'og:title', content: pageTitle })
+    upsertMeta('meta[property="og:description"]', { property: 'og:description', content: pageDescription })
+    upsertMeta('meta[property="og:type"]', { property: 'og:type', content: 'article' })
+    upsertMeta('meta[property="og:url"]', { property: 'og:url', content: url })
+    upsertMeta('meta[property="og:image"]', { property: 'og:image', content: ogImage })
+    upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: 'ConvertaJá' })
+    upsertMeta('meta[property="og:locale"]', { property: 'og:locale', content: 'pt_BR' })
+
+    // Twitter Cards
+    upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' })
+    upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: pageTitle })
+    upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: pageDescription })
+    upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: ogImage })
+  }, [])
+
+  // JSON-LD (Article)
+  const articleJsonLd = useMemo(() => {
+    const nowIso = new Date(document.lastModified || Date.now()).toISOString()
+    const url = typeof window !== 'undefined' ? window.location.href : ''
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: pageTitle,
+      description: pageDescription,
+      inLanguage: 'pt-BR',
+      author: { '@type': 'Organization', name: 'ConvertaJá' },
+      publisher: { '@type': 'Organization', name: 'ConvertaJá' },
+      image: [ogImage],
+      mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+      datePublished: nowIso,
+      dateModified: nowIso,
+    }
   }, [])
 
   const canProcess = useMemo(() => {
@@ -170,6 +239,8 @@ export default function Redesign() {
 
   return (
     <div className="bg-gray-50 text-gray-800 min-h-screen">
+      {/* JSON-LD for SEO */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
       {/* Nav */}
       <nav className="gradient-bg glass text-white py-4 sticky top-0 z-50" role="navigation" aria-label="Barra de navegação">
         <div className="container mx-auto px-6">
