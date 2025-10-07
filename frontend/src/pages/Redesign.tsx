@@ -51,6 +51,7 @@ export default function Redesign() {
   const [imgFormat, setImgFormat] = useState<'png' | 'jpg'>('png')
   const [dpi, setDpi] = useState(150)
   const [lang, setLang] = useState('por')
+  const appVersion = (import.meta.env.VITE_APP_VERSION as string | undefined) || 'v0.1.1'
 
   useEffect(() => {
     // simple hero reveal without external libs
@@ -420,6 +421,11 @@ export default function Redesign() {
           </div>
           <p className="opacity-75 mb-1">©2025 ConvertaJá — Ferramentas de PDF Online</p>
           <p className="text-sm opacity-60">Processamento seguro e privado • Sem registro necessário</p>
+          <div className="mt-3">
+            <span className="inline-flex items-center rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs text-white/90">
+              Versão {appVersion}
+            </span>
+          </div>
         </div>
       </footer>
     </div>
