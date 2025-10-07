@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: /sitemap.xml
-
+Sitemap: https://ismaelly1984.github.io/ConvertaJa/sitemap.xml
