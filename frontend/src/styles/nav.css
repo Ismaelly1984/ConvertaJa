@@ -9,7 +9,9 @@
 }
 
 .nav--gradient {
-  @apply bg-gradient-to-b from-black/20 to-transparent text-white border-b border-white/15 backdrop-blur-sm;
+  /* Mesma paleta do hero (gradient-bg) */
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #fb923c 100%);
+  @apply text-white border-b border-white/10;
 }
 
 .nav__container {
@@ -47,4 +49,3 @@
 
 .nav__loginBtn--default { @apply bg-slate-900 text-white hover:bg-slate-800 focus:ring-slate-900/40; }
 .nav__loginBtn--gradient { @apply bg-white/20 text-white hover:bg-white/30 focus:ring-white/40; }
-
