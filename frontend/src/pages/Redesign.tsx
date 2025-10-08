@@ -179,7 +179,7 @@ export default function Redesign() {
         className="gradient-bg hero-with-image text-white py-20 relative overflow-hidden"
         role="banner"
         aria-label="Apresentação"
-        style={{ ['--hero-bg-image' as any]: "url('/icons/og-image.png')" }}
+        style={{ ['--hero-bg-image' as any]: "url('/hero.jpg')" }}
       >
         <div className="floating-particle" style={{ top: '10%', left: '10%' }} />
         <div className="floating-particle" style={{ top: '20%', right: '15%' }} />
