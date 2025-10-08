@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient used inside the icon -->
+    <linearGradient id="grad" x1="256" y1="128" x2="896" y2="896" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <filter id="glass" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded square container (glassmorphism look without solid background) -->
+  <rect x="192" y="192" width="640" height="640" rx="128" stroke="url(#grad)" stroke-width="16" opacity="0.9"/>
+  <rect x="200" y="200" width="624" height="624" rx="120" fill="url(#grad)" opacity="0.18" filter="url(#glass)"/>
+
+  <!-- Document shape with folded corner -->
+  <g opacity="0.95">
+    <path d="M340 308h232l72 72v312c0 22.091-17.909 40-40 40H340c-22.091 0-40-17.909-40-40V348c0-22.091 17.909-40 40-40z" 
+          fill="url(#grad)" opacity="0.35" stroke="#9fb5ff" stroke-width="2"/>
+    <path d="M572 308v68c0 19.882 16.118 36 36 36h68" fill="none" stroke="#9fb5ff" stroke-width="2"/>
+  </g>
+
+  <!-- Conversion arrow (document to PDF) -->
+  <g>
+    <path d="M368 540h224" stroke="#3b82f6" stroke-width="20" stroke-linecap="round"/>
+    <path d="M560 500l64 40-64 40" fill="none" stroke="#3b82f6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Minimal 'PDF' hint square (glass) -->
+  <g opacity="0.8">
+    <rect x="612" y="452" width="140" height="140" rx="20" fill="url(#grad)" opacity="0.28"/>
+    <rect x="612" y="452" width="140" height="140" rx="20" stroke="#9fb5ff" stroke-width="2" opacity="0.6"/>
+    <text x="682" y="536" text-anchor="middle" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu" font-size="44" font-weight="700" fill="#dbeafe">PDF</text>
+  </g>
+</svg>

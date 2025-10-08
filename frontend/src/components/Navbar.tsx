@@ -9,6 +9,7 @@ export default function Navbar({ variant = 'default' }: Props) {
   const onGradient = variant === 'onGradient'
   const navClass = onGradient ? 'nav nav--gradient' : 'nav nav--default'
   const brandTextClass = onGradient ? 'nav__brandText nav__brandText--gradient' : 'nav__brandText nav__brandText--default'
+  const logoSrc = `${import.meta.env.BASE_URL}icons/converta-ja-logo-icon.svg`
   const langBtnClass = (active: boolean) => {
     if (onGradient) return `nav__langBtn ${active ? 'nav__langBtn--gradient-active' : 'nav__langBtn--gradient'}`
     return `nav__langBtn ${active ? 'nav__langBtn--default-active' : 'nav__langBtn--default'}`
@@ -19,7 +20,7 @@ export default function Navbar({ variant = 'default' }: Props) {
     <nav className={navClass}>
       <div className="nav__container">
         <a href="#" className="flex items-center gap-2 group" aria-label={locale === 'pt' ? 'Início do ConvertaJá' : 'ConvertaJá Home'}>
-          <div className="nav__brandIcon" />
+          <img src={logoSrc} alt="" aria-hidden="true" className="nav__brandLogo" />
           <span className={brandTextClass}>ConvertaJá</span>
         </a>
         <div className="flex items-center gap-3">

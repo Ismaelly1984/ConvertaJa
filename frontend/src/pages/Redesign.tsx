@@ -179,7 +179,7 @@ export default function Redesign() {
         className="gradient-bg hero-with-image text-white py-20 relative overflow-hidden"
         role="banner"
         aria-label="Apresentação"
-        style={{ ['--hero-bg-image' as any]: "url('/hero.jpg')" }}
+        style={{ ['--hero-bg-image' as any]: `url(${import.meta.env.BASE_URL || '/'}hero.jpg)` }}
       >
         <div className="floating-particle" style={{ top: '10%', left: '10%' }} />
         <div className="floating-particle" style={{ top: '20%', right: '15%' }} />
@@ -199,7 +199,7 @@ export default function Redesign() {
       </section>
 
       {/* Seção de Ferramentas */}
-      <section ref={toolsRef} id="tools" className="py-16">
+      <section ref={toolsRef} id="tools" className="py-16 content-vis">
         <div className="container mx-auto px-6">
           <div className={`max-w-6xl mx-auto transition-all duration-700 ${toolsIn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <h2 className="text-3xl font-bold text-center mb-10">{t.toolsTitle}</h2>

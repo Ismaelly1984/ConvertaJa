@@ -1,6 +1,4 @@
-/* ===== Global smoothness ===== */
-* { transition: all 0.25s ease; }
-
+/* ===== Suavidade pontual (evitar transições globais custosas) ===== */
 html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 /* ===== Gradients & Backgrounds ===== */
@@ -71,6 +69,11 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
   50% { transform: translateY(-22px) translateX(6px); }
 }
 
+/* Respeita preferências do usuário e reduz custo de animações/TRANS */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
 /* ===== Cards (Tools) ===== */
 .tool-card {
   background: rgba(255, 255, 255, 0.92);
@@ -79,6 +82,11 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
   border: 1px solid rgba(2, 6, 23, 0.06);
   box-shadow: 0 2px 10px rgba(2, 6, 23, 0.04);
   transform: translateY(0);
+}
+
+/* Desativa partículas em telas pequenas para reduzir custo de render */
+@media (max-width: 640px) {
+  .floating-particle { display: none !important; }
 }
 .tool-card:hover {
   transform: translateY(-6px);
@@ -103,6 +111,9 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
   outline-offset: 3px;
   box-shadow: 0 0 0 6px rgba(251, 146, 60, 0.18);
 }
+
+/* Evita custo de renderização fora da viewport inicial */
+.content-vis { content-visibility: auto; contain-intrinsic-size: 1px 800px; }
 
 /* ===== Upload Zone ===== */
 .upload-zone {

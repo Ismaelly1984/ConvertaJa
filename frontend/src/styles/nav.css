@@ -22,6 +22,11 @@
   @apply h-7 w-7 md:h-8 md:w-8 rounded-md bg-gradient-to-br from-brandIndigo to-brandViolet shadow transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3;
 }
 
+/* Nova logo no navbar */
+.nav__brandLogo {
+  @apply h-7 w-7 md:h-8 md:w-8 rounded-md shadow transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3;
+}
+
 .nav__brandText {
   @apply font-bold tracking-tight group-hover:opacity-90 text-lg md:text-xl transition-colors;
 }
