@@ -4,9 +4,10 @@
 html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 /* ===== Gradients & Backgrounds ===== */
-.gradient-bg {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #fb923c 100%);
+:root {
+  --brand-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #fb923c 100%);
 }
+.gradient-bg { background: var(--brand-gradient); }
 
 /* Glass effect for translucent bars/cards */
 .glass {
@@ -129,5 +130,5 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
 
 /* ===== Footer polish ===== */
 /* Footer alinhado com o mesmo gradiente do hero/nav */
-footer.gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #fb923c 100%); }
+footer.gradient-bg { background: var(--brand-gradient); }
 footer p, footer span { color: rgba(255, 255, 255, 0.88); }

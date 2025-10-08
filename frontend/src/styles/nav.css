@@ -9,8 +9,8 @@
 }
 
 .nav--gradient {
-  /* Mesma paleta do hero (gradient-bg) */
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #fb923c 100%);
+  /* Usa a mesma variável do hero/footer; inclui fallback */
+  background: var(--brand-gradient, linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #fb923c 100%));
   @apply text-white border-b border-white/10;
 }
 
