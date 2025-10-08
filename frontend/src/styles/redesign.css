@@ -128,5 +128,6 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
 }
 
 /* ===== Footer polish ===== */
-footer.gradient-bg { background: linear-gradient(135deg, #0f172a, #1e293b 80%, #fb923c); }
+/* Footer alinhado com o mesmo gradiente do hero/nav */
+footer.gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #fb923c 100%); }
 footer p, footer span { color: rgba(255, 255, 255, 0.88); }
