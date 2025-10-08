@@ -18,8 +18,17 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
   background-image: var(--hero-bg-image, none);
   background-size: cover;
   background-position: center;
-  opacity: 0.28; /* um pouco mais visível, mantendo legibilidade */
+  /* Opacidade responsiva e blend sutil para melhor contraste */
+  opacity: 0.22; /* mobile */
+  mix-blend-mode: soft-light;
   pointer-events: none;
+}
+
+@media (min-width: 768px) { /* md */
+  .hero-with-image::after { opacity: 0.28; }
+}
+@media (min-width: 1024px) { /* lg */
+  .hero-with-image::after { opacity: 0.32; }
 }
 
 /* Glass effect for translucent bars/cards */
