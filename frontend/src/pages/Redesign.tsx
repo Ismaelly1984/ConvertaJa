@@ -65,6 +65,11 @@ export default function Redesign() {
     err: locale === 'pt' ? 'Falha ao processar arquivos. Verifique os parâmetros e tente novamente.' : 'Failed to process files. Check parameters and try again.',
   }), [locale])
 
+  // Estilo tipado para variável CSS do hero (evita any/assertions)
+  const heroStyle: React.CSSProperties = {
+    '--hero-bg-image': `url(${import.meta.env.BASE_URL || '/'}hero.jpg)`,
+  }
+
   useEffect(() => {
     const io = new IntersectionObserver(
       (entries) => {
@@ -179,7 +184,7 @@ export default function Redesign() {
         className="gradient-bg hero-with-image text-white py-20 relative overflow-hidden"
         role="banner"
         aria-label="Apresentação"
-        style={{ ['--hero-bg-image' as any]: `url(${import.meta.env.BASE_URL || '/'}hero.jpg)` }}
+        style={heroStyle}
       >
         <div className="floating-particle" style={{ top: '10%', left: '10%' }} />
         <div className="floating-particle" style={{ top: '20%', right: '15%' }} />
