@@ -9,6 +9,19 @@ html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grays
 }
 .gradient-bg { background: var(--brand-gradient); }
 
+/* Hero com imagem de fundo (opcional via CSS var) */
+.hero-with-image { position: relative; }
+.hero-with-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--hero-bg-image, none);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18; /* sutil para legibilidade do texto */
+  pointer-events: none;
+}
+
 /* Glass effect for translucent bars/cards */
 .glass {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.78), rgba(30, 41, 59, 0.68) 60%, rgba(251, 146, 60, 0.36));

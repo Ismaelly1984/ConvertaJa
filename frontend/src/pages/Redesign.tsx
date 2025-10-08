@@ -174,7 +174,13 @@ export default function Redesign() {
       <Navbar variant="onGradient" />
 
       {/* Hero */}
-      <section ref={heroRef} className="gradient-bg text-white py-20 relative overflow-hidden" role="banner" aria-label="Apresentação">
+      <section
+        ref={heroRef}
+        className="gradient-bg hero-with-image text-white py-20 relative overflow-hidden"
+        role="banner"
+        aria-label="Apresentação"
+        style={{ ['--hero-bg-image' as any]: "url('/icons/og-image.png')" }}
+      >
         <div className="floating-particle" style={{ top: '10%', left: '10%' }} />
         <div className="floating-particle" style={{ top: '20%', right: '15%' }} />
         <div className="floating-particle" style={{ bottom: '30%', left: '20%' }} />
