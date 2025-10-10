@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import os
-
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
-from starlette.background import BackgroundTask
 from pypdf import PdfReader
+from starlette.background import BackgroundTask
 
 from app.config import Settings
 from app.deps import get_app_settings
