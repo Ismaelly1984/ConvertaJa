@@ -39,6 +39,7 @@ def compress_pdf(input_path: str, output_path: str, quality: Quality) -> str:
         "-sDEVICE=pdfwrite",
         "-dCompatibilityLevel=1.4",
         "-dNOPAUSE",
+        "-dSAFER",
         "-dQUIET",
         "-dBATCH",
     ]

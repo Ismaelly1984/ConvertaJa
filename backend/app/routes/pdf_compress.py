@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import os
 
+from uuid import uuid4
+
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
+from starlette.background import BackgroundTask
 
 from app.config import Settings
 from app.deps import get_app_settings
@@ -13,6 +16,14 @@ from app.utils.mime import is_pdf, looks_like_pdf
 from app.utils.security import pdf_has_javascript
 
 router = APIRouter()
+
+
+def _cleanup_paths(paths: list[str]) -> None:
+    for p in paths:
+        try:
+            os.remove(p)
+        except Exception:
+            pass
 
 
 @router.post("/compress", response_class=FileResponse)
@@ -29,10 +40,11 @@ async def compress_endpoint(
     input_path = save_upload(settings.TMP_DIR, file.filename, data)
     if pdf_has_javascript(input_path):
         raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
-    out_path = os.path.join(settings.TMP_DIR, "compressed.pdf")
+    out_path = os.path.join(settings.TMP_DIR, f"{uuid4()}-compressed.pdf")
     try:
         compress_pdf(input_path, out_path, quality)
     except RuntimeError as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
     headers = {"Content-Disposition": 'attachment; filename="compressed.pdf"'}
-    return FileResponse(out_path, media_type="application/pdf", headers=headers)
+    bg = BackgroundTask(_cleanup_paths, [input_path, out_path])
+    return FileResponse(out_path, media_type="application/pdf", headers=headers, background=bg)

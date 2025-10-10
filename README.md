@@ -75,7 +75,7 @@ CI/CD
 
 Frontend — Observações
 - UI redesign ativa por padrão.
-- Service Worker atualizado (v2) com estratégia network-first para `index.html` a fim de evitar conteúdo desatualizado.
+- Service Worker atualizado com estratégia network-first para `index.html` a fim de evitar conteúdo desatualizado. O registro do SW acontece dentro do bundle (`src/main.tsx`) e respeita `BASE_URL` ao publicar no GitHub Pages.
 - Se após deploy o site não refletir a nova UI, force refresh (Ctrl+F5) ou, em DevTools → Application → Service Workers, clique em “Unregister” e recarregue.
 
 - Habilitar GitHub Pages
@@ -104,10 +104,21 @@ Jobs (quando ASYNC_JOBS=true)
 - GET `/api/jobs/{jobId}/download` → binário.
 
 Segurança & Privacidade
-- CSP rigorosa por headers. `style-src 'unsafe-inline'` temporário para Tailwind JIT.
+- CSP rigorosa:
+  - Backend: cabeçalho CSP aplicado às respostas da API.
+  - Frontend: meta CSP no `index.html` com `script-src` limitado a `'self'` e hash do JSON‑LD inline (gerado automaticamente no build) e `connect-src` restrito por ambiente (`VITE_CONNECT_SRC`).
 - Uploads em `/tmp/convertaja`, nomeados por UUID, TTL de 30 min.
 - Rate limiting por IP (60 req/10 min). CORS restrito ao domínio do frontend.
 - Logs com `requestId`, duração, tamanho processado e mascaramento simples de PII.
+- Compressão (Ghostscript) executada com `-dSAFER`.
+- Saídas síncronas (merge/split/compress) usam nomes únicos por requisição e limpeza automática pós‑envio.
+
+Nginx (edge) — headers de segurança
+- `docker/nginx.conf` define:
+  - `X-Content-Type-Options: nosniff`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+  - (Opcional) HSTS: habilitar quando houver TLS na borda.
 
 Roadmap (pós-MVP)
 - Armazenamento S3 para resultados grandes.

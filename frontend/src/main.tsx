@@ -11,3 +11,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </I18nProvider>
   </React.StrictMode>
 )
+
+// Registra o Service Worker em produção (fora de localhost)
+if (
+  'serviceWorker' in navigator &&
+  !['localhost', '127.0.0.1'].includes(location.hostname)
+) {
+  window.addEventListener('load', () => {
+    const scopeBase = import.meta.env.BASE_URL || '/'
+    navigator.serviceWorker
+      .register(scopeBase + 'sw.js')
+      .then((reg) => console.log('Service Worker registrado:', reg.scope))
+      .catch((err) => console.warn('Falha no Service Worker:', err))
+  })
+}

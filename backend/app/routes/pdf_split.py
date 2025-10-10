@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import os
 
+from uuid import uuid4
+
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
+from starlette.background import BackgroundTask
 from pypdf import PdfReader
 
 from app.config import Settings
@@ -15,6 +18,14 @@ from app.utils.ranges import RangeParseError, parse_ranges
 from app.utils.security import pdf_has_javascript
 
 router = APIRouter()
+
+
+def _cleanup_paths(paths: list[str]) -> None:
+    for p in paths:
+        try:
+            os.remove(p)
+        except Exception:
+            pass
 
 
 @router.post("/split", response_class=FileResponse)
@@ -39,10 +50,14 @@ async def split_endpoint(
         raise HTTPException(status_code=400, detail=str(e)) from e
 
     out_paths: list[str] = []
+    prefix = str(uuid4())
     for idx, _ in enumerate(parts, start=1):
-        out_paths.append(os.path.join(settings.TMP_DIR, f"split-{idx}.pdf"))
+        out_paths.append(os.path.join(settings.TMP_DIR, f"{prefix}-split-{idx}.pdf"))
     res = split_pdf(input_path, parts, out_paths)
-    zip_path = os.path.join(settings.TMP_DIR, "split.zip")
+    zip_path = os.path.join(settings.TMP_DIR, f"{prefix}-split.zip")
     zip_paths(zip_path, res)
     headers = {"Content-Disposition": 'attachment; filename="split.zip"'}
-    return FileResponse(zip_path, media_type="application/zip", headers=headers)
+    # Limpa PDF de entrada, partes e zip após envio
+    to_delete = [input_path] + res + [zip_path]
+    bg = BackgroundTask(_cleanup_paths, to_delete)
+    return FileResponse(zip_path, media_type="application/zip", headers=headers, background=bg)

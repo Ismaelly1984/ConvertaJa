@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import os
 
+from uuid import uuid4
+
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
+from starlette.background import BackgroundTask
 
 from app.config import Settings
 from app.deps import get_app_settings
@@ -13,6 +16,14 @@ from app.utils.mime import is_pdf, looks_like_pdf
 from app.utils.security import pdf_has_javascript
 
 router = APIRouter()
+
+
+def _cleanup_paths(paths: list[str]) -> None:
+    for p in paths:
+        try:
+            os.remove(p)
+        except Exception:
+            pass
 
 
 @router.post("/merge", response_class=FileResponse)
@@ -42,7 +53,9 @@ async def merge_endpoint(
             raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
         input_paths.append(p)
 
-    out_path = os.path.join(settings.TMP_DIR, "merged.pdf")
+    # Saída única por requisição + limpeza pós-envio
+    out_path = os.path.join(settings.TMP_DIR, f"{uuid4()}-merged.pdf")
     merge_pdfs(input_paths, out_path)
     headers = {"Content-Disposition": 'attachment; filename="merged.pdf"'}
-    return FileResponse(out_path, media_type="application/pdf", headers=headers)
+    bg = BackgroundTask(_cleanup_paths, input_paths + [out_path])
+    return FileResponse(out_path, media_type="application/pdf", headers=headers, background=bg)

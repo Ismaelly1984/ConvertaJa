@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ConvertaJá — Ferramentas de PDF Online</title>
     <meta name="title" content="ConvertaJá — Ferramentas de PDF Online" />
+    <!-- Segurança/CSP: script-src usa hash do JSON-LD inline.
+         Se editar o bloco JSON-LD abaixo, recalcule o SHA-256 em base64
+         e atualize o valor em script-src. Exemplo de comando:
+         echo -n '<CONTEUDO_JSONLD_MINIFICADO>' | openssl dgst -sha256 -binary | base64 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-__JSONLD_HASH__'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src %VITE_CONNECT_SRC%; object-src 'none'; frame-ancestors 'none'; base-uri 'self'" />
     
     <!-- SEO -->
     <meta name="description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
@@ -32,40 +37,7 @@
     <meta name="twitter:site" content="@ismaeldev" />
 
     <!-- Structured Data -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "ConvertaJá",
-        "url": "https://ismaelly1984.github.io/ConvertaJa/",
-        "description": "Ferramentas online para unir, dividir, comprimir e converter PDFs.",
-        "applicationCategory": "UtilityApplication",
-        "operatingSystem": "Web",
-        "creator": {
-          "@type": "Person",
-          "name": "Ismael Nunes dos Santos",
-          "url": "https://ismaelly1984.github.io/portfolio/"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "ConvertaJá",
-          "logo": "https://ismaelly1984.github.io/ConvertaJa/icons/converta-ja-logo-icon.svg"
-        },
-        "featureList": [
-          "Unir PDFs",
-          "Dividir PDFs",
-          "Comprimir PDFs",
-          "Converter PDF em Imagem",
-          "Reconhecimento de Texto (OCR)"
-        ],
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "BRL"
-        },
-        "screenshot": "https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png"
-      }
-    </script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ConvertaJá","url":"https://ismaelly1984.github.io/ConvertaJa/","description":"Ferramentas online para unir, dividir, comprimir e converter PDFs.","applicationCategory":"UtilityApplication","operatingSystem":"Web","creator":{"@type":"Person","name":"Ismael Nunes dos Santos","url":"https://ismaelly1984.github.io/portfolio/"},"publisher":{"@type":"Organization","name":"ConvertaJá","logo":"https://ismaelly1984.github.io/ConvertaJa/icons/converta-ja-logo-icon.svg"},"featureList":["Unir PDFs","Dividir PDFs","Comprimir PDFs","Converter PDF em Imagem","Reconhecimento de Texto (OCR)"],"offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"},"screenshot":"https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png"}</script>
 
     <!-- PWA -->
     <meta name="theme-color" content="#0f172a" />
@@ -94,19 +66,5 @@
     <div id="root"></div>
 
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Evita registrar o SW em ambiente de desenvolvimento/local
-      if (
-        'serviceWorker' in navigator &&
-        !['localhost', '127.0.0.1'].includes(location.hostname)
-      ) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker
-            .register('/ConvertaJa/sw.js')
-            .then(reg => console.log('Service Worker registrado:', reg.scope))
-            .catch(err => console.warn('Falha no Service Worker:', err));
-        });
-      }
-    </script>
   </body>
 </html>
