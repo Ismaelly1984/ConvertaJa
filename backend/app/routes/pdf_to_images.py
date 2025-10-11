@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 from pdf2image import convert_from_path
 from pdf2image import exceptions as pdf2_exceptions
+from pypdf import PdfReader
 
 from app.config import Settings
 from app.deps import get_app_settings
@@ -48,9 +49,17 @@ async def to_images_endpoint(
             pass
         raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
 
+    MAX_PAGES = 200
     try:
+        total_pages = len(PdfReader(input_path).pages)
+        if total_pages > MAX_PAGES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"PDF excede o limite de páginas (máx {MAX_PAGES})",
+            )
         # Converte cada página para imagem (PIL.Image)
-        images = convert_from_path(input_path, dpi=dpi)
+        # Converte cada página para imagem (PIL.Image)
+        images = convert_from_path(input_path, dpi=dpi, first_page=1, last_page=total_pages)
     except pdf2_exceptions.PDFPageCountError as err:
         raise HTTPException(status_code=400, detail="PDF inválido ou sem páginas") from err
     except pdf2_exceptions.PDFInfoNotInstalledError as err:

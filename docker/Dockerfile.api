@@ -18,6 +18,11 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY backend /app
 
+# Create non-root user and writable temp dir
+RUN useradd -m -u 10001 app && \
+    mkdir -p /tmp/convertaja && \
+    chown -R app:app /app /tmp/convertaja
+
 ENV PORT=8000 \
     ENV=production \
     MAX_FILE_MB=25 \
@@ -30,4 +35,5 @@ ENV PORT=8000 \
 
 EXPOSE 8000
 # Respect PORT env (Render sets PORT dynamically). Default comes from ENV above.
+USER app
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+import subprocess
 from typing import Literal
 
 Quality = Literal["low", "medium", "high"]
@@ -45,7 +46,10 @@ def compress_pdf(input_path: str, output_path: str, quality: Quality) -> str:
     ]
     args += _gs_params_for_quality(quality)
     args += ["-sOutputFile=" + output_path, input_path]
-    proc = subprocess.run(args, capture_output=True, check=False)
+    try:
+        proc = subprocess.run(args, capture_output=True, check=False, timeout=120)
+    except subprocess.TimeoutExpired as err:
+        raise RuntimeError("Ghostscript excedeu o tempo limite (timeout)") from err
     if proc.returncode != 0:
         raise RuntimeError(f"Ghostscript falhou: {proc.stderr.decode(errors='ignore')}")
     return output_path

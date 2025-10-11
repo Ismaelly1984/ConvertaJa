@@ -18,8 +18,13 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY backend /app
 
+# Create non-root user and writable temp dir
+RUN useradd -m -u 10001 app && \
+    mkdir -p /tmp/convertaja && \
+    chown -R app:app /app /tmp/convertaja
+
 ENV REDIS_URL=redis://redis:6379/0 \
     TMP_DIR=/tmp/convertaja
 
+USER app
 CMD ["celery", "-A", "app.workers.celery_app.celery", "worker", "-l", "info"]
-
