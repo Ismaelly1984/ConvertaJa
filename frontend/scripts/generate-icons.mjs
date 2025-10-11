@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-env node */
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { existsSync } from 'node:fs'
@@ -36,4 +37,3 @@ main().catch((err) => {
   console.error(err)
   process.exit(1)
 })
-
