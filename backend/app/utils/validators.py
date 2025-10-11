@@ -18,7 +18,10 @@ def _ensure_pdf_signature(filename: str, content_type: str | None, data: bytes, 
 
 
 async def validate_and_save_pdf(
-    upload: UploadFile, tmp_dir: str, max_bytes: int, type_error_msg: str = "Apenas PDF é aceito"
+    upload: UploadFile,
+    tmp_dir: str,
+    max_bytes: int,
+    type_error_msg: str = "Apenas PDF é aceito",
 ) -> tuple[str, int]:
     data = await upload.read()
     _ensure_size(data, max_bytes)
@@ -30,7 +33,10 @@ async def validate_and_save_pdf(
 
 
 async def validate_and_save_pdfs_for_merge(
-    files: list[UploadFile], tmp_dir: str, max_bytes: int, total_limit_bytes: int
+    files: list[UploadFile],
+    tmp_dir: str,
+    max_bytes: int,
+    total_limit_bytes: int,
 ) -> list[str]:
     total = 0
     paths: list[str] = []
@@ -44,7 +50,9 @@ async def validate_and_save_pdfs_for_merge(
 
 
 async def validate_and_save_pdf_or_image_for_ocr(
-    upload: UploadFile, tmp_dir: str, max_bytes: int
+    upload: UploadFile,
+    tmp_dir: str,
+    max_bytes: int,
 ) -> str:
     data = await upload.read()
     _ensure_size(data, max_bytes)
@@ -57,4 +65,3 @@ async def validate_and_save_pdf_or_image_for_ocr(
     if not is_image(upload.filename, upload.content_type):
         raise HTTPException(status_code=415, detail="Apenas PDF/JPG/PNG são aceitos")
     return save_upload(tmp_dir, upload.filename, data)
-
