@@ -30,6 +30,20 @@
 - Para pré-visualizar o build localmente: `npm run preview`.
 - O CI (GitHub Actions) faz upload do `dist/` como artefato e pode publicar no GitHub Pages (quando habilitado).
 
+Ícones PWA
+- Gere os PNGs 192×192 e 512×512 a partir do SVG com:
+  - `npm install` (para instalar `sharp` como devDependency)
+  - `npm run icons:gen`
+- Os arquivos gerados sobrescrevem `public/icons/icon-192.png` e `public/icons/icon-512.png`.
+- Dica: mantenha `apple-touch-icon.png` (180×180) e o SVG como maskable no manifest.
+
+Imagens (hero/OG)
+- Gere `hero.avif` a partir de `hero.jpg` para melhor LCP:
+  - `npm install`
+  - `npm run images:gen`
+- O preload de `hero.avif` + fallback `hero.jpg` está configurado no `index.html`.
+- O script também re‑encode `icons/og-image.png` para tamanho/compactação mais adequados (mantendo dimensões atuais).
+
 <a id="env"></a>
 ## Env
 - `VITE_API_BASE_URL` — URL da API (ex.: `http://localhost:8000` para dev, ou o domínio de produção)

@@ -27,7 +27,8 @@ def _convert_pdf_with_limits(input_path: str, dpi: int, max_pages: int):
                 status_code=413,
                 detail=(f"PDF excede o limite de páginas (máx {max_pages})"),
             )
-        return convert_from_path(input_path, dpi=dpi, first_page=1, last_page=total_pages)
+        images = convert_from_path(input_path, dpi=dpi)
+        return images[: total_pages]
     except pdf2_exceptions.PDFPageCountError as err:
         raise HTTPException(status_code=400, detail="PDF inválido ou sem páginas") from err
     except pdf2_exceptions.PDFInfoNotInstalledError as err:

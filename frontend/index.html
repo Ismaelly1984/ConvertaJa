@@ -55,7 +55,8 @@
     <link rel="manifest" href="manifest.webmanifest" />
 
     <!-- Performance -->
-    <!-- Preload da imagem hero para melhorar LCP -->
+    <!-- Preload da imagem hero para melhorar LCP (preferir AVIF com fallback) -->
+    <link rel="preload" as="image" href="hero.avif" type="image/avif" />
     <link rel="preload" as="image" href="hero.jpg" type="image/jpeg" />
 
     <!-- Favicon -->
