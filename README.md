@@ -8,6 +8,7 @@
   - [Frontend](#frontend)
 - [Como rodar com Docker](#como-rodar-com-docker)
 - [Nginx como proxy (opcional)](#nginx-como-proxy-opcional)
+- [Overrides de ambiente (Docker/Render)](#overrides-de-ambiente-dockerrender)
 - [Limite de upload (100MB)](#limite-de-upload-100mb)
 - [Testes](#testes)
 - [CI/CD](#cicd)
@@ -167,3 +168,9 @@
 - Armazenamento S3 para resultados grandes.
 - Login/JWT + Stripe para plano Premium.
 - E2E com Playwright e perfis Lighthouse 90+.
+<a id="overrides-de-ambiente-dockerrender"></a>
+## Overrides de ambiente (Docker/Render)
+- Docker: use um arquivo de override para ajustar limites/tempo sem alterar o compose base.
+  - Exemplo: `docker/docker-compose.override.example.yml` (copie para `docker/docker-compose.override.yml` e edite valores).
+  - Suba combinando os arquivos: `docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml up --build`.
+- Render: defina as variáveis no dashboard do serviço (ex.: `PDF_TO_IMAGES_MAX_PAGES`, `OCR_MAX_PAGES`, `GS_TIMEOUT_SECONDS`).

@@ -1,0 +1,21 @@
+version: "3.9"
+
+# Example override to tweak security/resource limits locally.
+# Copy this file to `docker/docker-compose.override.yml` and adjust as needed.
+
+services:
+  api:
+    environment:
+      # Max pages when converting PDF → images (route and service)
+      PDF_TO_IMAGES_MAX_PAGES: "200"
+      # Max pages for OCR (image fallback)
+      OCR_MAX_PAGES: "50"
+      # Ghostscript timeout (seconds) for compression
+      GS_TIMEOUT_SECONDS: "120"
+
+  api-test:
+    environment:
+      PDF_TO_IMAGES_MAX_PAGES: "200"
+      OCR_MAX_PAGES: "50"
+      GS_TIMEOUT_SECONDS: "120"
+
