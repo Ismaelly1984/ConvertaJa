@@ -151,6 +151,8 @@
 - Logs com `requestId`, duração, tamanho processado e mascaramento simples de PII.
 - Compressão (Ghostscript) executada com `-dSAFER`.
 - Saídas síncronas (merge/split/compress) usam nomes únicos por requisição e limpeza automática pós‑envio.
+- Limites de recursos configuráveis por ambiente:
+  - `PDF_TO_IMAGES_MAX_PAGES` (padrão 200), `OCR_MAX_PAGES` (padrão 50), `GS_TIMEOUT_SECONDS` (padrão 120).
 
 <a id="nginx-edge--headers-de-seguranca"></a>
 ## Nginx (edge) — headers de segurança

@@ -19,6 +19,9 @@ services:
       TTL_UPLOAD_MINUTES: "30"
       OCR_LANGS: "por,eng"
       CORS_ORIGINS: "http://localhost:5173"
+      PDF_TO_IMAGES_MAX_PAGES: "200"
+      OCR_MAX_PAGES: "50"
+      GS_TIMEOUT_SECONDS: "120"
     ports:
       - "8000:8000"
     volumes:
@@ -41,6 +44,9 @@ services:
       TTL_UPLOAD_MINUTES: "5"
       OCR_LANGS: "por,eng"
       CORS_ORIGINS: "http://localhost:5173"
+      PDF_TO_IMAGES_MAX_PAGES: "200"
+      OCR_MAX_PAGES: "50"
+      GS_TIMEOUT_SECONDS: "120"
     volumes:
       - ${PWD}/backend:/app:delegated
       - convertaja_tmp:/tmp/convertaja

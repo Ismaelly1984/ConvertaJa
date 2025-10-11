@@ -21,6 +21,9 @@
 - TTL_UPLOAD_MINUTES=30
 - OCR_LANGS=por,eng
 - CORS_ORIGINS=http://localhost:5173
+- PDF_TO_IMAGES_MAX_PAGES=200   # máximo de páginas para PDF→imagens
+- OCR_MAX_PAGES=50              # máximo de páginas no fallback de OCR por imagens
+- GS_TIMEOUT_SECONDS=120        # timeout (s) no Ghostscript na compressão
 
 <a id="comandos-uteis"></a>
 ## Comandos úteis
@@ -52,6 +55,10 @@
 - Limites de upload: por arquivo (`MAX_FILE_MB`) e validações por rota. `413` quando exceder.
 - Varredura simples de PDFs com JS/ações (`/JavaScript`, `/JS`) e bloqueio com `415`.
 - Ghostscript executado com `-dSAFER` na compressão.
+- Limites adicionais para evitar exaustão de recursos:
+  - PDF→imagens: até `PDF_TO_IMAGES_MAX_PAGES` páginas (padrão 200); excedendo retorna `413`.
+  - OCR (fallback por imagens): até `OCR_MAX_PAGES` páginas (padrão 50).
+  - Ghostscript: timeout de `GS_TIMEOUT_SECONDS` (padrão 120s).
 - Nomes de saída por requisição (UUID) + limpeza pós‑envio e limpeza periódica por TTL em `TMP_DIR`.
 - Rate limiting em memória: 60 requisições / 10 minutos por IP (camada de app). Para alta escala, use Redis/Nginx.
 

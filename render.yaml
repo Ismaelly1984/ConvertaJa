@@ -24,6 +24,12 @@ services:
         value: por,eng
       - key: CORS_ORIGINS
         value: https://ismaelly1984.github.io
+      - key: PDF_TO_IMAGES_MAX_PAGES
+        value: 200
+      - key: OCR_MAX_PAGES
+        value: 50
+      - key: GS_TIMEOUT_SECONDS
+        value: 120
 
   # Uncomment these if/when you switch to async jobs with shared storage (e.g., S3)
   # - type: worker
