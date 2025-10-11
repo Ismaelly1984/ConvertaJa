@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import uuid
+
 from starlette.responses import Response
 
 
@@ -29,3 +31,11 @@ def add_csp_headers(response: Response) -> None:
         "base-uri 'self'"
     )
     response.headers["Content-Security-Policy"] = csp
+
+
+def is_uuid4(s: str) -> bool:
+    try:
+        val = uuid.UUID(s, version=4)
+    except Exception:  # noqa: BLE001
+        return False
+    return str(val) == s

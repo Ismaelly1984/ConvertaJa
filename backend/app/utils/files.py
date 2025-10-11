@@ -54,3 +54,19 @@ def remove_old_files(tmp_dir: str, ttl_minutes: int) -> int:
             except OSError:
                 pass
     return removed
+
+
+def secure_tmp_join(tmp_dir: str, *parts: str) -> str:
+    """Join path parts under tmp_dir, preventing path traversal.
+    Raises ValueError if the resulting path escapes tmp_dir.
+    """
+    base = os.path.abspath(tmp_dir)
+    path = os.path.abspath(os.path.join(base, *parts))
+    try:
+        common = os.path.commonpath([base, path])
+    except ValueError:
+        # Different drives on Windows-like environments
+        raise ValueError("invalid path")
+    if common != base:
+        raise ValueError("path traversal detected")
+    return path

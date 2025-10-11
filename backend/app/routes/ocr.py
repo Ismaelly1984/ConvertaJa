@@ -8,9 +8,9 @@ from fastapi.responses import FileResponse, JSONResponse
 from app.config import Settings
 from app.deps import get_app_settings
 from app.services.ocr_service import ocr_pdf_or_image, save_text
-from app.utils.files import save_upload
+from app.utils.files import save_upload, secure_tmp_join
 from app.utils.mime import is_image, is_pdf
-from app.utils.security import pdf_has_javascript
+from app.utils.security import is_uuid4, pdf_has_javascript
 
 router = APIRouter()
 
@@ -74,7 +74,12 @@ async def ocr_endpoint(
 
 @router.get("/ocr/download/{id}", response_class=FileResponse)
 async def ocr_download(id: str, settings: Settings = Depends(get_app_settings)):
-    path = os.path.join(settings.TMP_DIR, f"{id}.txt")
+    if not is_uuid4(id):
+        raise HTTPException(status_code=400, detail="ID inválido")
+    try:
+        path = secure_tmp_join(settings.TMP_DIR, f"{id}.txt")
+    except ValueError as err:  # noqa: BLE001
+        raise HTTPException(status_code=400, detail="ID inválido") from err
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Resultado não encontrado")
     headers = {"Content-Disposition": f'attachment; filename="{id}.txt"'}

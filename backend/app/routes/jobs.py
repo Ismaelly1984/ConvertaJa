@@ -9,9 +9,15 @@ from pypdf import PdfReader
 
 from app.config import Settings
 from app.deps import get_app_settings
-from app.utils.files import save_upload
-from app.utils.mime import is_image, is_pdf
+from app.utils.files import save_upload, secure_tmp_join
+from app.utils.mime import is_image, is_pdf, looks_like_pdf
 from app.utils.ranges import RangeParseError, parse_ranges
+from app.utils.security import is_uuid4, pdf_has_javascript
+from app.utils.validators import (
+    validate_and_save_pdf,
+    validate_and_save_pdf_or_image_for_ocr,
+    validate_and_save_pdfs_for_merge,
+)
 
 # Importações de Celery/tarefas são feitas sob demanda dentro das rotas
 # para evitar falhas de import quando o ambiente não possui Celery runtime
@@ -46,12 +52,9 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "merge":
         if not files or len(files) < MIN_FILES_FOR_MERGE:
             raise HTTPException(status_code=400, detail="Envie 2+ PDFs para merge")
-        inputs = []
-        for f in files:
-            if not is_pdf(f.filename, f.content_type):
-                raise HTTPException(status_code=415, detail="Apenas PDFs são aceitos")
-            data = await f.read()
-            inputs.append(save_upload(tmp, f.filename, data))
+        total_limit = 100 * 1024 * 1024
+        max_bytes = settings.MAX_FILE_MB * 1024 * 1024
+        inputs = await validate_and_save_pdfs_for_merge(files, tmp, max_bytes, total_limit)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
 
         res = tasks.task_merge.apply_async(kwargs={"tmp_dir": tmp, "inputs": inputs})
@@ -60,12 +63,11 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "split":
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF")
-        if not is_pdf(file.filename, file.content_type):
-            raise HTTPException(status_code=415, detail="Apenas PDF é aceito")
+        input_path, _size = await validate_and_save_pdf(
+            file, tmp, settings.MAX_FILE_MB * 1024 * 1024
+        )
         if not ranges:
             raise HTTPException(status_code=400, detail="Informe ranges")
-        data = await file.read()
-        input_path = save_upload(tmp, file.filename, data)
         total = len(PdfReader(input_path).pages)
         try:
             pr = parse_ranges(ranges, total)
@@ -81,12 +83,11 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "compress":
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF")
-        if not is_pdf(file.filename, file.content_type):
-            raise HTTPException(status_code=415, detail="Apenas PDF é aceito")
+        input_path, _size = await validate_and_save_pdf(
+            file, tmp, settings.MAX_FILE_MB * 1024 * 1024
+        )
         if quality not in {"low", "medium", "high"}:
             raise HTTPException(status_code=400, detail="quality inválido")
-        data = await file.read()
-        input_path = save_upload(tmp, file.filename, data)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
 
         res = tasks.task_compress.apply_async(
@@ -101,12 +102,11 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "to-images":
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF")
-        if not is_pdf(file.filename, file.content_type):
-            raise HTTPException(status_code=415, detail="Apenas PDF é aceito")
+        input_path, _size = await validate_and_save_pdf(
+            file, tmp, settings.MAX_FILE_MB * 1024 * 1024
+        )
         if format not in {"jpg", "png"} or not dpi:
             raise HTTPException(status_code=400, detail="Parâmetros inválidos")
-        data = await file.read()
-        input_path = save_upload(tmp, file.filename, data)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
 
         res = tasks.task_to_images.apply_async(
@@ -122,13 +122,10 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "ocr":
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF/Imagem")
-        if not (
-            is_pdf(file.filename, file.content_type) or is_image(file.filename, file.content_type)
-        ):
-            raise HTTPException(status_code=415, detail="Apenas PDF/JPG/PNG são aceitos")
         langs = (lang or "por").split("+")
-        data = await file.read()
-        input_path = save_upload(tmp, file.filename, data)
+        input_path = await validate_and_save_pdf_or_image_for_ocr(
+            file, tmp, settings.MAX_FILE_MB * 1024 * 1024
+        )
         from app.workers import tasks  # noqa: PLC0415  # import tardio
 
         res = tasks.task_ocr.apply_async(
@@ -169,13 +166,18 @@ async def job_status(job_id: str):
 
 @router.get("/jobs/{job_id}/download")
 async def job_download(job_id: str, settings: Settings = Depends(get_app_settings)):
+    if not is_uuid4(job_id):
+        raise HTTPException(status_code=400, detail="ID inválido")
     # tenta deduzir extensão comum
     for ext, mime in (
         (".pdf", "application/pdf"),
         (".zip", "application/zip"),
         (".txt", "text/plain"),
     ):
-        path = os.path.join(settings.TMP_DIR, f"job-{job_id}{ext}")
+        try:
+            path = secure_tmp_join(settings.TMP_DIR, f"job-{job_id}{ext}")
+        except ValueError:
+            continue
         if os.path.exists(path):
             headers = {"Content-Disposition": f'attachment; filename="result{ext}"'}
             return FileResponse(path, media_type=mime, headers=headers)
