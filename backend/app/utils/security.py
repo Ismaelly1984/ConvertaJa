@@ -22,8 +22,8 @@ def add_csp_headers(response: Response) -> None:
     csp = (
         "default-src 'self'; "
         "script-src 'self'; "
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-        "font-src 'self' https://fonts.gstatic.com data:; "
+        "style-src 'self' 'unsafe-inline'; "
+        "font-src 'self' data:; "
         "img-src 'self' data: blob:; "
         "connect-src 'self'; "
         "object-src 'none'; "
