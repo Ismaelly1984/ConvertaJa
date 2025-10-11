@@ -64,9 +64,9 @@ def secure_tmp_join(tmp_dir: str, *parts: str) -> str:
     path = os.path.abspath(os.path.join(base, *parts))
     try:
         common = os.path.commonpath([base, path])
-    except ValueError:
+    except ValueError as err:
         # Different drives on Windows-like environments
-        raise ValueError("invalid path")
+        raise ValueError("invalid path") from err
     if common != base:
         raise ValueError("path traversal detected")
     return path

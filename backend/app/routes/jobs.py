@@ -9,10 +9,9 @@ from pypdf import PdfReader
 
 from app.config import Settings
 from app.deps import get_app_settings
-from app.utils.files import save_upload, secure_tmp_join
-from app.utils.mime import is_image, is_pdf, looks_like_pdf
+from app.utils.files import secure_tmp_join
 from app.utils.ranges import RangeParseError, parse_ranges
-from app.utils.security import is_uuid4, pdf_has_javascript
+from app.utils.security import is_uuid4
 from app.utils.validators import (
     validate_and_save_pdf,
     validate_and_save_pdf_or_image_for_ocr,
