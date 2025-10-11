@@ -35,7 +35,7 @@ def ocr_pdf_or_image(path: str, langs: list[str]) -> str:
         total = len(reader.pages)
         last_page = min(total, get_settings().OCR_MAX_PAGES)
         images = convert_from_path(path, dpi=200)
-        images = images[: last_page]
+        images = images[:last_page]
         langs_tag = "+".join(langs)
         texts: list[str] = []
         for img in images:

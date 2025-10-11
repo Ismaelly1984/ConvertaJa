@@ -36,4 +36,17 @@ export default [
       globals: { ...globals.serviceworker },
     },
   },
+  // Node build scripts (mjs)
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+    rules: {
+      // Allow standard Node globals without noisy no-undef
+      'no-undef': 'off',
+    },
+  },
 ]

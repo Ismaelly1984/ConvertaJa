@@ -23,7 +23,7 @@ def pdf_to_images(
         max_pages = get_settings().PDF_TO_IMAGES_MAX_PAGES
     last_page = min(total, max_pages)
     images = convert_from_path(input_path, dpi=dpi)
-    images = images[: last_page]
+    images = images[:last_page]
     paths: list[str] = []
     ext = "jpg" if fmt == "jpg" else "png"
     for idx, img in enumerate(images, start=1):
