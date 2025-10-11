@@ -19,6 +19,26 @@ from app.utils.security import pdf_has_javascript
 router = APIRouter()
 
 
+def _convert_pdf_with_limits(input_path: str, dpi: int, max_pages: int):
+    try:
+        total_pages = len(PdfReader(input_path).pages)
+        if total_pages > max_pages:
+            raise HTTPException(
+                status_code=413,
+                detail=(f"PDF excede o limite de páginas (máx {max_pages})"),
+            )
+        return convert_from_path(input_path, dpi=dpi, first_page=1, last_page=total_pages)
+    except pdf2_exceptions.PDFPageCountError as err:
+        raise HTTPException(status_code=400, detail="PDF inválido ou sem páginas") from err
+    except pdf2_exceptions.PDFInfoNotInstalledError as err:
+        raise HTTPException(
+            status_code=500, detail="Dependência 'poppler' (pdftoppm) não encontrada no servidor"
+        ) from err
+    except pdf2_exceptions.PDFSyntaxError as err:
+        raise HTTPException(status_code=400, detail="PDF corrompido ou inválido") from err
+    except Exception as err:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"Falha ao converter PDF: {str(err)}") from err
+
 @router.post("/to-images")
 async def to_images_endpoint(
     file: UploadFile = File(...),
@@ -50,28 +70,7 @@ async def to_images_endpoint(
         raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
 
     try:
-        total_pages = len(PdfReader(input_path).pages)
-        if total_pages > settings.PDF_TO_IMAGES_MAX_PAGES:
-            raise HTTPException(
-                status_code=413,
-                detail=(
-                    f"PDF excede o limite de páginas (máx {settings.PDF_TO_IMAGES_MAX_PAGES})"
-                ),
-            )
-        # Converte cada página para imagem (PIL.Image)
-        # Converte cada página para imagem (PIL.Image)
-        images = convert_from_path(input_path, dpi=dpi, first_page=1, last_page=total_pages)
-    except pdf2_exceptions.PDFPageCountError as err:
-        raise HTTPException(status_code=400, detail="PDF inválido ou sem páginas") from err
-    except pdf2_exceptions.PDFInfoNotInstalledError as err:
-        raise HTTPException(
-            status_code=500,
-            detail="Dependência 'poppler' (pdftoppm) não encontrada no servidor",
-        ) from err
-    except pdf2_exceptions.PDFSyntaxError as err:
-        raise HTTPException(status_code=400, detail="PDF corrompido ou inválido") from err
-    except Exception as err:  # noqa: BLE001
-        raise HTTPException(status_code=500, detail=f"Falha ao converter PDF: {str(err)}") from err
+        images = _convert_pdf_with_limits(input_path, dpi, settings.PDF_TO_IMAGES_MAX_PAGES)
     finally:
         # Limpa o PDF temporário
         try:

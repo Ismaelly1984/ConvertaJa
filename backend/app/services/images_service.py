@@ -5,6 +5,7 @@ from typing import Literal
 
 from pdf2image import convert_from_path
 from pypdf import PdfReader
+
 from app.config import get_settings
 
 ImageFormat = Literal["jpg", "png"]
