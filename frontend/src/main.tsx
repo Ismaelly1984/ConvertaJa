@@ -4,6 +4,11 @@ import Redesign from './pages/Redesign'
 import { I18nProvider } from './i18n/I18nProvider'
 import './styles/tailwind.css'
 
+// Frame-buster (mitiga cliquejacking quando servido sem headers CSP no Pages)
+if (window.top !== window.self) {
+  try { window.top!.location.href = window.location.href } catch { /* noop */ }
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <I18nProvider>
