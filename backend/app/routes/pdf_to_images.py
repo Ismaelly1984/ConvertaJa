@@ -39,6 +39,7 @@ def _convert_pdf_with_limits(input_path: str, dpi: int, max_pages: int):
     except Exception as err:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=f"Falha ao converter PDF: {str(err)}") from err
 
+
 @router.post("/to-images")
 async def to_images_endpoint(
     file: UploadFile = File(...),
