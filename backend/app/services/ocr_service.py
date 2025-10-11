@@ -8,6 +8,8 @@ from pdf2image import convert_from_path
 from PIL import Image
 from pypdf import PdfReader
 
+from app.config import get_settings
+
 
 def extract_text_pdf_textual(path: str) -> str:
     reader = PdfReader(path)
@@ -29,10 +31,9 @@ def ocr_pdf_or_image(path: str, langs: list[str]) -> str:
         if text:
             return text
         # fallback OCR por imagens (limita número de páginas)
-        MAX_PAGES_OCR = 50
         reader = PdfReader(path)
         total = len(reader.pages)
-        last_page = min(total, MAX_PAGES_OCR)
+        last_page = min(total, get_settings().OCR_MAX_PAGES)
         images = convert_from_path(path, dpi=200, first_page=1, last_page=last_page)
         langs_tag = "+".join(langs)
         texts: list[str] = []

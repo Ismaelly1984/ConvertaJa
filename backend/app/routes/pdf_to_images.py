@@ -49,13 +49,14 @@ async def to_images_endpoint(
             pass
         raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
 
-    MAX_PAGES = 200
     try:
         total_pages = len(PdfReader(input_path).pages)
-        if total_pages > MAX_PAGES:
+        if total_pages > settings.PDF_TO_IMAGES_MAX_PAGES:
             raise HTTPException(
                 status_code=413,
-                detail=f"PDF excede o limite de páginas (máx {MAX_PAGES})",
+                detail=(
+                    f"PDF excede o limite de páginas (máx {settings.PDF_TO_IMAGES_MAX_PAGES})"
+                ),
             )
         # Converte cada página para imagem (PIL.Image)
         # Converte cada página para imagem (PIL.Image)

@@ -5,18 +5,21 @@ from typing import Literal
 
 from pdf2image import convert_from_path
 from pypdf import PdfReader
+from app.config import get_settings
 
 ImageFormat = Literal["jpg", "png"]
 
 
 def pdf_to_images(
-    input_path: str, out_dir: str, fmt: ImageFormat, dpi: int, max_pages: int = 200
+    input_path: str, out_dir: str, fmt: ImageFormat, dpi: int, max_pages: int | None = None
 ) -> list[str]:
     os.makedirs(out_dir, exist_ok=True)
     try:
         total = len(PdfReader(input_path).pages)
     except Exception:
-        total = max_pages
+        total = get_settings().PDF_TO_IMAGES_MAX_PAGES
+    if max_pages is None:
+        max_pages = get_settings().PDF_TO_IMAGES_MAX_PAGES
     last_page = min(total, max_pages)
     images = convert_from_path(input_path, dpi=dpi, first_page=1, last_page=last_page)
     paths: list[str] = []

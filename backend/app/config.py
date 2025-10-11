@@ -14,6 +14,9 @@ class Settings:
     TMP_DIR: str
     TTL_UPLOAD_MINUTES: int
     OCR_LANGS: list[str]
+    PDF_TO_IMAGES_MAX_PAGES: int
+    OCR_MAX_PAGES: int
+    GS_TIMEOUT_SECONDS: int
 
 
 def get_settings() -> Settings:
@@ -26,6 +29,9 @@ def get_settings() -> Settings:
     ttl = int(os.getenv("TTL_UPLOAD_MINUTES", "30"))
     langs = os.getenv("OCR_LANGS", "por,eng").split(",")
     langs = [lang.strip() for lang in langs if lang.strip()]
+    to_images_max = int(os.getenv("PDF_TO_IMAGES_MAX_PAGES", "200"))
+    ocr_max = int(os.getenv("OCR_MAX_PAGES", "50"))
+    gs_timeout = int(os.getenv("GS_TIMEOUT_SECONDS", "120"))
     return Settings(
         PORT=port,
         ENV=env,
@@ -35,4 +41,7 @@ def get_settings() -> Settings:
         TMP_DIR=tmp_dir,
         TTL_UPLOAD_MINUTES=ttl,
         OCR_LANGS=langs,
+        PDF_TO_IMAGES_MAX_PAGES=to_images_max,
+        OCR_MAX_PAGES=ocr_max,
+        GS_TIMEOUT_SECONDS=gs_timeout,
     )
