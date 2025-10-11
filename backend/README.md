@@ -102,3 +102,37 @@
 <a id="observacoes-de-proxy"></a>
 ## Observações de proxy
 - Atrás de proxy, o IP do cliente pode ser do balanceador. Não confie em `X-Forwarded-For` fora de redes confiáveis; prefira rate‑limit no Nginx/edge.
+
+## Sobrescrever limites por ambiente (Render/Docker)
+### Render (dashboard)
+- No serviço "converta-api" → Environment, crie/edite as variáveis:
+  - `PDF_TO_IMAGES_MAX_PAGES` (ex.: `300`)
+  - `OCR_MAX_PAGES` (ex.: `80`)
+  - `GS_TIMEOUT_SECONDS` (ex.: `180`)
+- Salve e redeploy/restart para aplicar.
+
+### docker-compose (override local)
+Crie `docker-compose.override.yml` ao lado do arquivo base e sobrescreva os envs:
+
+```yaml
+version: "3.9"
+services:
+  api:
+    environment:
+      PDF_TO_IMAGES_MAX_PAGES: "300"
+      OCR_MAX_PAGES: "80"
+      GS_TIMEOUT_SECONDS: "180"
+  api-test:
+    environment:
+      PDF_TO_IMAGES_MAX_PAGES: "300"
+      OCR_MAX_PAGES: "80"
+      GS_TIMEOUT_SECONDS: "180"
+```
+
+Suba combinando os arquivos:
+
+```
+docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml up --build
+```
+
+Observação: aumente esses limites com moderação. Valores altos podem permitir abusos (CPU/RAM/tempo) em PDFs complexos.
