@@ -98,7 +98,9 @@ async def stream_save_pdf(
                     head_checked = True
                 total += len(chunk)
                 if total > max_bytes:
-                    raise HTTPException(status_code=413, detail="Arquivo excede o limite de tamanho")
+                    raise HTTPException(
+                        status_code=413, detail="Arquivo excede o limite de tamanho"
+                    )
                 f.write(chunk)
         if pdf_has_javascript(out_path):
             raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")

@@ -31,7 +31,7 @@ def _gs_params_for_quality(q: Quality) -> list[str]:
         "-dColorImageFilter=/DCTEncode",
         "-dAutoFilterColorImages=true",
         "-dAutoFilterGrayImages=true",
-        f"-dJPEGQ={int(qfactor*100)}",
+        f"-dJPEGQ={int(qfactor * 100)}",
     ]
 
 

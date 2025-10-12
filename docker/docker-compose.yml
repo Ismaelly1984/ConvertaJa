@@ -1,4 +1,3 @@
-
 services:
   redis:
     image: redis:7-alpine
@@ -50,7 +49,7 @@ services:
       GS_TIMEOUT_SECONDS: "120"
       MAX_DPI_TO_IMAGES: "300"
     volumes:
-      - ${PWD}/backend:/app:delegated
+      - ../backend:/app:delegated
       - convertaja_tmp:/tmp/convertaja
     depends_on:
       - redis

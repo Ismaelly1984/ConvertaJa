@@ -15,7 +15,6 @@ from app.utils.files import zip_paths
 from app.utils.ranges import RangeParseError, parse_ranges
 from app.utils.validators import stream_save_pdf
 
-
 router = APIRouter()
 
 
@@ -33,9 +32,7 @@ async def split_endpoint(
     ranges: str = Form(..., description='ex: "1-3,5,7-8"'),
     settings: Settings = Depends(get_app_settings),
 ):
-    input_path = await stream_save_pdf(
-        file, settings.TMP_DIR, settings.MAX_FILE_MB * 1024 * 1024
-    )
+    input_path = await stream_save_pdf(file, settings.TMP_DIR, settings.MAX_FILE_MB * 1024 * 1024)
 
     total_pages = len(PdfReader(input_path).pages)
     try:
@@ -46,9 +43,7 @@ async def split_endpoint(
     out_paths: list[str] = []
     prefix = str(uuid4())
     for idx, _ in enumerate(parts, start=1):
-        out_paths.append(
-            os.path.join(settings.TMP_DIR, f"{prefix}-split-{idx}.pdf")
-        )
+        out_paths.append(os.path.join(settings.TMP_DIR, f"{prefix}-split-{idx}.pdf"))
     res = split_pdf(input_path, parts, out_paths)
     zip_path = os.path.join(settings.TMP_DIR, f"{prefix}-split.zip")
     zip_paths(zip_path, res)
