@@ -45,11 +45,15 @@ async def split_endpoint(
     out_paths: list[str] = []
     prefix = str(uuid4())
     for idx, _ in enumerate(parts, start=1):
-        out_paths.append(os.path.join(settings.TMP_DIR, f"{prefix}-split-{idx}.pdf"))
+        out_paths.append(
+            os.path.join(settings.TMP_DIR, f"{prefix}-split-{idx}.pdf")
+        )
     res = split_pdf(input_path, parts, out_paths)
     zip_path = os.path.join(settings.TMP_DIR, f"{prefix}-split.zip")
     zip_paths(zip_path, res)
-    headers = {"Content-Disposition": 'attachment; filename="split.zip"'}
+    headers = {
+        "Content-Disposition": 'attachment; filename="split.zip"',
+    }
     # Limpa PDF de entrada, partes e zip após envio
     to_delete = [input_path] + res + [zip_path]
     bg = BackgroundTask(_cleanup_paths, to_delete)
