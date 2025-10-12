@@ -82,5 +82,8 @@ async def ocr_download(id: str, settings: Settings = Depends(get_app_settings)):
         raise HTTPException(status_code=400, detail="ID inválido") from err
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Resultado não encontrado")
-    headers = {"Content-Disposition": f'attachment; filename="{id}.txt"'}
+    headers = {
+        "Content-Disposition": f'attachment; filename="{id}.txt"',
+        "Cache-Control": "no-store",
+    }
     return FileResponse(path, media_type="text/plain", headers=headers)

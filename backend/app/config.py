@@ -17,6 +17,7 @@ class Settings:
     PDF_TO_IMAGES_MAX_PAGES: int
     OCR_MAX_PAGES: int
     GS_TIMEOUT_SECONDS: int
+    MAX_DPI_TO_IMAGES: int
 
 
 def get_settings() -> Settings:
@@ -32,6 +33,7 @@ def get_settings() -> Settings:
     to_images_max = int(os.getenv("PDF_TO_IMAGES_MAX_PAGES", "200"))
     ocr_max = int(os.getenv("OCR_MAX_PAGES", "50"))
     gs_timeout = int(os.getenv("GS_TIMEOUT_SECONDS", "120"))
+    max_dpi = int(os.getenv("MAX_DPI_TO_IMAGES", "300"))
     return Settings(
         PORT=port,
         ENV=env,
@@ -44,4 +46,5 @@ def get_settings() -> Settings:
         PDF_TO_IMAGES_MAX_PAGES=to_images_max,
         OCR_MAX_PAGES=ocr_max,
         GS_TIMEOUT_SECONDS=gs_timeout,
+        MAX_DPI_TO_IMAGES=max_dpi,
     )

@@ -178,6 +178,9 @@ async def job_download(job_id: str, settings: Settings = Depends(get_app_setting
         except ValueError:
             continue
         if os.path.exists(path):
-            headers = {"Content-Disposition": f'attachment; filename="result{ext}"'}
+            headers = {
+                "Content-Disposition": f'attachment; filename="result{ext}"',
+                "Cache-Control": "no-store",
+            }
             return FileResponse(path, media_type=mime, headers=headers)
     raise HTTPException(status_code=404, detail="Resultado do job não encontrado")

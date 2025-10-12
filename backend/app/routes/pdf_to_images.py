@@ -71,6 +71,17 @@ async def to_images_endpoint(
             pass
         raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
 
+    # 400 — DPI acima do limite configurado
+    if dpi > settings.MAX_DPI_TO_IMAGES:
+        try:
+            os.remove(input_path)
+        except Exception:
+            pass
+        raise HTTPException(
+            status_code=400,
+            detail=(f"DPI excede o limite permitido (máx {settings.MAX_DPI_TO_IMAGES})"),
+        )
+
     try:
         images = _convert_pdf_with_limits(input_path, dpi, settings.PDF_TO_IMAGES_MAX_PAGES)
     finally:
