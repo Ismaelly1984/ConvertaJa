@@ -24,6 +24,7 @@
 - PDF_TO_IMAGES_MAX_PAGES=200   # máximo de páginas para PDF→imagens
 - OCR_MAX_PAGES=50              # máximo de páginas no fallback de OCR por imagens
 - GS_TIMEOUT_SECONDS=120        # timeout (s) no Ghostscript na compressão
+- MAX_DPI_TO_IMAGES=300         # DPI máximo permitido em PDF→imagens
 
 <a id="comandos-uteis"></a>
 ## Comandos úteis
@@ -59,6 +60,7 @@
   - PDF→imagens: até `PDF_TO_IMAGES_MAX_PAGES` páginas (padrão 200); excedendo retorna `413`.
   - OCR (fallback por imagens): até `OCR_MAX_PAGES` páginas (padrão 50).
   - Ghostscript: timeout de `GS_TIMEOUT_SECONDS` (padrão 120s).
+  - DPI máximo em PDF→imagens: `MAX_DPI_TO_IMAGES` (padrão 300); acima retorna `400`.
 - Nomes de saída por requisição (UUID) + limpeza pós‑envio e limpeza periódica por TTL em `TMP_DIR`.
 - Rate limiting em memória: 60 requisições / 10 minutos por IP (camada de app). Para alta escala, use Redis/Nginx.
 

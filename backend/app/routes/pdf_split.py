@@ -11,10 +11,9 @@ from starlette.background import BackgroundTask
 from app.config import Settings
 from app.deps import get_app_settings
 from app.services.split_service import split_pdf
-from app.utils.files import save_upload, zip_paths
-from app.utils.mime import is_pdf, looks_like_pdf
+from app.utils.files import zip_paths
+from app.utils.validators import stream_save_pdf
 from app.utils.ranges import RangeParseError, parse_ranges
-from app.utils.security import pdf_has_javascript
 
 router = APIRouter()
 
@@ -33,14 +32,9 @@ async def split_endpoint(
     ranges: str = Form(..., description='ex: "1-3,5,7-8"'),
     settings: Settings = Depends(get_app_settings),
 ):
-    data = await file.read()
-    if not (is_pdf(file.filename, file.content_type) or looks_like_pdf(data)):
-        raise HTTPException(status_code=415, detail="Apenas PDF é aceito")
-    if len(data) > settings.MAX_FILE_MB * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="Arquivo excede o limite de tamanho")
-    input_path = save_upload(settings.TMP_DIR, file.filename, data)
-    if pdf_has_javascript(input_path):
-        raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
+    input_path = await stream_save_pdf(
+        file, settings.TMP_DIR, settings.MAX_FILE_MB * 1024 * 1024
+    )
 
     total_pages = len(PdfReader(input_path).pages)
     try:

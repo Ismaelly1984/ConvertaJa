@@ -10,9 +10,7 @@ from starlette.background import BackgroundTask
 from app.config import Settings
 from app.deps import get_app_settings
 from app.services.merge_service import merge_pdfs
-from app.utils.files import save_upload
-from app.utils.mime import is_pdf, looks_like_pdf
-from app.utils.security import pdf_has_javascript
+from app.utils.validators import stream_save_pdfs_for_merge
 
 router = APIRouter()
 
@@ -34,23 +32,11 @@ async def merge_endpoint(
     if not (MIN_FILES <= len(files) <= MAX_FILES):
         raise HTTPException(status_code=400, detail="Envie entre 2 e 20 PDFs")
 
-    # Validação de MIME e tamanho total (<= 100MB)
-    total_size = 0
-    input_paths: list[str] = []
+    # Streaming + limite total (<= 100MB)
     max_bytes = settings.MAX_FILE_MB * 1024 * 1024
-    for f in files:
-        data = await f.read()
-        if not (is_pdf(f.filename, f.content_type) or looks_like_pdf(data)):
-            raise HTTPException(status_code=415, detail="Apenas PDFs são aceitos")
-        total_size += len(data)
-        if total_size > 100 * 1024 * 1024:
-            raise HTTPException(status_code=413, detail="Soma dos arquivos excede 100MB")
-        if len(data) > max_bytes:
-            raise HTTPException(status_code=413, detail="Arquivo excede o limite de tamanho")
-        p = save_upload(settings.TMP_DIR, f.filename, data)
-        if pdf_has_javascript(p):
-            raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
-        input_paths.append(p)
+    input_paths = await stream_save_pdfs_for_merge(
+        files, settings.TMP_DIR, max_bytes, 100 * 1024 * 1024
+    )
 
     # Saída única por requisição + limpeza pós-envio
     out_path = os.path.join(settings.TMP_DIR, f"{uuid4()}-merged.pdf")

@@ -22,6 +22,7 @@ services:
       PDF_TO_IMAGES_MAX_PAGES: "200"
       OCR_MAX_PAGES: "50"
       GS_TIMEOUT_SECONDS: "120"
+      MAX_DPI_TO_IMAGES: "300"
     ports:
       - "8000:8000"
     volumes:
@@ -47,6 +48,7 @@ services:
       PDF_TO_IMAGES_MAX_PAGES: "200"
       OCR_MAX_PAGES: "50"
       GS_TIMEOUT_SECONDS: "120"
+      MAX_DPI_TO_IMAGES: "300"
     volumes:
       - ${PWD}/backend:/app:delegated
       - convertaja_tmp:/tmp/convertaja

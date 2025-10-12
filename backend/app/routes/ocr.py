@@ -9,8 +9,9 @@ from app.config import Settings
 from app.deps import get_app_settings
 from app.services.ocr_service import ocr_pdf_or_image, save_text
 from app.utils.files import save_upload, secure_tmp_join
+from app.utils.validators import stream_save_pdf
 from app.utils.mime import is_image, is_pdf
-from app.utils.security import is_uuid4, pdf_has_javascript
+from app.utils.security import is_uuid4
 
 router = APIRouter()
 
@@ -25,19 +26,15 @@ async def ocr_endpoint(
     if not (is_pdf(file.filename, ct) or is_image(file.filename, ct)):
         raise HTTPException(status_code=415, detail="Apenas PDF/JPG/PNG são aceitos")
 
-    data = await file.read()
-    if len(data) > settings.MAX_FILE_MB * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="Arquivo excede o limite de tamanho")
-
-    input_path = save_upload(settings.TMP_DIR, file.filename, data)
-
-    # Bloqueia PDFs com ações/JS
-    if is_pdf(file.filename, ct) and pdf_has_javascript(input_path):
-        try:
-            os.remove(input_path)
-        except Exception:
-            pass
-        raise HTTPException(status_code=415, detail="PDF contém JavaScript/ações embutidas")
+    if is_pdf(file.filename, ct):
+        input_path = await stream_save_pdf(
+            file, settings.TMP_DIR, settings.MAX_FILE_MB * 1024 * 1024, "Apenas PDF é aceito"
+        )
+    else:
+        data = await file.read()
+        if len(data) > settings.MAX_FILE_MB * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="Arquivo excede o limite de tamanho")
+        input_path = save_upload(settings.TMP_DIR, file.filename, data)
 
     # Sanitiza idiomas e valida contra configuração
     langs = [s for s in lang.split("+") if s]

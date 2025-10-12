@@ -30,6 +30,8 @@ services:
         value: 50
       - key: GS_TIMEOUT_SECONDS
         value: 120
+      - key: MAX_DPI_TO_IMAGES
+        value: 300
 
   # Uncomment these if/when you switch to async jobs with shared storage (e.g., S3)
   # - type: worker
