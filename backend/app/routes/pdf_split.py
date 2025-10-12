@@ -15,6 +15,7 @@ from app.utils.files import zip_paths
 from app.utils.ranges import RangeParseError, parse_ranges
 from app.utils.validators import stream_save_pdf
 
+
 router = APIRouter()
 
 
