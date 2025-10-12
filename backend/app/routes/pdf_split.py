@@ -5,8 +5,8 @@ from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
-from pypdf import PdfReader
 from starlette.background import BackgroundTask
+from pypdf import PdfReader
 
 from app.config import Settings
 from app.deps import get_app_settings
