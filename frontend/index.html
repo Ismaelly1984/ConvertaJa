@@ -1,71 +1,84 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ConvertaJá — Ferramentas de PDF Online</title>
-    <meta name="title" content="ConvertaJá — Ferramentas de PDF Online" />
-    <!-- Segurança/CSP: script-src usa hash do JSON-LD inline.
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConvertaJá — Ferramentas de PDF Online</title>
+  <meta name="title" content="ConvertaJá — Ferramentas de PDF Online" />
+  <!-- Segurança/CSP: script-src usa hash do JSON-LD inline.
          Se editar o bloco JSON-LD abaixo, recalcule o SHA-256 em base64
          e atualize o valor em script-src. Exemplo de comando:
          echo -n '<CONTEUDO_JSONLD_MINIFICADO>' | openssl dgst -sha256 -binary | base64 -->
-    <!-- Nota: frame-ancestors é ignorado em meta CSP pelos navegadores. Em Pages usamos frame-buster e, em produção com Nginx/Cloudflare, aplique via header. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-__JSONLD_HASH__'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src %VITE_CONNECT_SRC%; object-src 'none'; base-uri 'self'" />
-    
-    <!-- SEO -->
-    <meta name="description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
-    <meta name="keywords" content="conversor de pdf, unir pdf, dividir pdf, comprimir pdf, converter pdf, pdf para imagem, ocr online" />
-    <meta name="author" content="Ismael Nunes dos Santos" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://ismaelly1984.github.io/ConvertaJa/" />
+  <!-- Nota: frame-ancestors é ignorado em meta CSP pelos navegadores. Em Pages usamos frame-buster e, em produção com Nginx/Cloudflare, aplique via header. -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'sha256-__JSONLD_HASH__';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' data: https://fonts.gstatic.com;
+    img-src 'self' data: blob:;
+    connect-src 'self' https:;
+    object-src 'none';
+    base-uri 'self';
+  " />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="ConvertaJá — Ferramentas de PDF Online" />
-    <meta property="og:description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://ismaelly1984.github.io/ConvertaJa/" />
-    <meta property="og:image" content="https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png" />
-    <meta property="og:image:alt" content="Interface do ConvertaJá — Ferramentas de PDF Online" />
-    <meta property="og:site_name" content="ConvertaJá" />
-    <meta property="og:locale" content="pt_BR" />
+  <!-- SEO -->
+  <meta name="description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
+  <meta name="keywords"
+    content="conversor de pdf, unir pdf, dividir pdf, comprimir pdf, converter pdf, pdf para imagem, ocr online" />
+  <meta name="author" content="Ismael Nunes dos Santos" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ismaelly1984.github.io/ConvertaJa/" />
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="ConvertaJá — Ferramentas de PDF Online" />
-    <meta name="twitter:description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
-    <meta name="twitter:image" content="https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png" />
-    <meta name="twitter:image:alt" content="Interface do ConvertaJá — Ferramentas de PDF Online" />
-    <meta name="twitter:site" content="@ismaeldev" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="ConvertaJá — Ferramentas de PDF Online" />
+  <meta property="og:description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ismaelly1984.github.io/ConvertaJa/" />
+  <meta property="og:image" content="https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png" />
+  <meta property="og:image:alt" content="Interface do ConvertaJá — Ferramentas de PDF Online" />
+  <meta property="og:site_name" content="ConvertaJá" />
+  <meta property="og:locale" content="pt_BR" />
 
-    <!-- Structured Data -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ConvertaJá","url":"https://ismaelly1984.github.io/ConvertaJa/","description":"Ferramentas online para unir, dividir, comprimir e converter PDFs.","applicationCategory":"UtilityApplication","operatingSystem":"Web","creator":{"@type":"Person","name":"Ismael Nunes dos Santos","url":"https://ismaelly1984.github.io/portfolio/"},"publisher":{"@type":"Organization","name":"ConvertaJá","logo":"https://ismaelly1984.github.io/ConvertaJa/icons/converta-ja-logo-icon.svg"},"featureList":["Unir PDFs","Dividir PDFs","Comprimir PDFs","Converter PDF em Imagem","Reconhecimento de Texto (OCR)"],"offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"},"screenshot":"https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png"}</script>
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ConvertaJá — Ferramentas de PDF Online" />
+  <meta name="twitter:description" content="Unir, dividir, converter e comprimir PDFs online em segundos." />
+  <meta name="twitter:image" content="https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png" />
+  <meta name="twitter:image:alt" content="Interface do ConvertaJá — Ferramentas de PDF Online" />
+  <meta name="twitter:site" content="@ismaeldev" />
 
-    <!-- PWA -->
-    <meta name="theme-color" content="#0f172a" />
-    <meta name="application-name" content="ConvertaJá" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="ConvertaJá" />
-    <!-- Apple touch icon (ideal: PNG 180x180) -->
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
-    <!-- Safari pinned tab -->
-    <link rel="mask-icon" href="icons/converta-ja-logo-icon.svg" color="#fb923c" />
-    <!-- Windows tiles -->
-    <meta name="msapplication-TileColor" content="#0f172a" />
-    <link rel="manifest" href="manifest.webmanifest" />
+  <!-- Structured Data -->
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ConvertaJá","url":"https://ismaelly1984.github.io/ConvertaJa/","description":"Ferramentas online para unir, dividir, comprimir e converter PDFs.","applicationCategory":"UtilityApplication","operatingSystem":"Web","creator":{"@type":"Person","name":"Ismael Nunes dos Santos","url":"https://ismaelly1984.github.io/portfolio/"},"publisher":{"@type":"Organization","name":"ConvertaJá","logo":"https://ismaelly1984.github.io/ConvertaJa/icons/converta-ja-logo-icon.svg"},"featureList":["Unir PDFs","Dividir PDFs","Comprimir PDFs","Converter PDF em Imagem","Reconhecimento de Texto (OCR)"],"offers":{"@type":"Offer","price":"0","priceCurrency":"BRL"},"screenshot":"https://ismaelly1984.github.io/ConvertaJa/icons/og-image.png"}</script>
 
-    <!-- Performance -->
-    <!-- Preload da imagem hero para melhorar LCP (preferir AVIF; fallback JPEG será carregado automaticamente quando necessário) -->
-    <link rel="preload" as="image" href="hero.avif" type="image/avif" />
+  <!-- PWA -->
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="application-name" content="ConvertaJá" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ConvertaJá" />
+  <!-- Apple touch icon (ideal: PNG 180x180) -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+  <!-- Safari pinned tab -->
+  <link rel="mask-icon" href="icons/converta-ja-logo-icon.svg" color="#fb923c" />
+  <!-- Windows tiles -->
+  <meta name="msapplication-TileColor" content="#0f172a" />
+  <link rel="manifest" href="manifest.webmanifest" />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="icons/converta-ja-logo-icon.svg" />
-  </head>
+  <!-- Performance -->
+  <!-- Preload da imagem hero para melhorar LCP (preferir AVIF; fallback JPEG será carregado automaticamente quando necessário) -->
+  <link rel="preload" as="image" href="hero.avif" type="image/avif" />
 
-  <body>
-    <div id="root"></div>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="icons/converta-ja-logo-icon.svg" />
+</head>
 
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<body>
+  <div id="root"></div>
+
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
