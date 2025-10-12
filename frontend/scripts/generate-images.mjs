@@ -3,6 +3,7 @@
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { existsSync } from 'node:fs'
+import { rename } from 'node:fs/promises'
 
 // Generate hero.avif from hero.jpg and optionally optimize OG
 // Usage: npm run images:gen
@@ -27,9 +28,12 @@ async function main() {
 
   if (existsSync(ogPng)) {
     // Re-encode to ensure reasonable size (keep dimensions)
+    // sharp does not allow the same input and output path
+    const tmpPng = ogPng.replace(/\.png$/i, '.tmp.png')
     await sharp(ogPng)
       .png({ compressionLevel: 9, adaptiveFiltering: true })
-      .toFile(ogPng)
+      .toFile(tmpPng)
+    await rename(tmpPng, ogPng)
     console.log('Optimized:', ogPng)
   }
 }
