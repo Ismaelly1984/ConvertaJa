@@ -53,4 +53,9 @@ async def split_endpoint(
     # Limpa PDF de entrada, partes e zip após envio
     to_delete = [input_path] + res + [zip_path]
     bg = BackgroundTask(_cleanup_paths, to_delete)
-    return FileResponse(zip_path, media_type="application/zip", headers=headers, background=bg)
+    return FileResponse(
+        zip_path,
+        media_type="application/zip",
+        headers=headers,
+        background=bg,
+    )

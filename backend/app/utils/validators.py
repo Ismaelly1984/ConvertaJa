@@ -71,7 +71,10 @@ async def validate_and_save_pdf_or_image_for_ocr(
 
 
 async def stream_save_pdf(
-    upload: UploadFile, tmp_dir: str, max_bytes: int, type_error_msg: str = "Apenas PDF é aceito"
+    upload: UploadFile,
+    tmp_dir: str,
+    max_bytes: int,
+    type_error_msg: str = "Apenas PDF é aceito",
 ) -> str:
     """Grava UploadFile em disco em chunks, validando tamanho e assinatura real de PDF.
     - Aceita como PDF se (ext/MIME) OU (cabeçalho mágico "%PDF-").
