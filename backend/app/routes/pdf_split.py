@@ -12,8 +12,8 @@ from app.config import Settings
 from app.deps import get_app_settings
 from app.services.split_service import split_pdf
 from app.utils.files import zip_paths
-from app.utils.validators import stream_save_pdf
 from app.utils.ranges import RangeParseError, parse_ranges
+from app.utils.validators import stream_save_pdf
 
 router = APIRouter()
 

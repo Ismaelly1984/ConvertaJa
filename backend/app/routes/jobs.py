@@ -9,9 +9,9 @@ from pypdf import PdfReader
 
 from app.config import Settings
 from app.deps import get_app_settings
-from app.utils.files import secure_tmp_join
-from app.utils.ranges import RangeParseError, parse_ranges
+from app.utils.files import save_upload, secure_tmp_join
 from app.utils.mime import is_pdf
+from app.utils.ranges import RangeParseError, parse_ranges
 from app.utils.security import is_uuid4
 from app.utils.validators import stream_save_pdf, stream_save_pdfs_for_merge
 
@@ -128,8 +128,6 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
             if len(data) > settings.MAX_FILE_MB * 1024 * 1024:
                 raise HTTPException(status_code=413, detail="Arquivo excede o limite de tamanho")
             # Reutiliza caminho simples para imagens
-            from app.utils.files import save_upload  # local import to avoid unused when not needed
-
             input_path = save_upload(tmp, file.filename, data)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
 

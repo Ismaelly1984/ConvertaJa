@@ -9,9 +9,9 @@ from app.config import Settings
 from app.deps import get_app_settings
 from app.services.ocr_service import ocr_pdf_or_image, save_text
 from app.utils.files import save_upload, secure_tmp_join
-from app.utils.validators import stream_save_pdf
 from app.utils.mime import is_image, is_pdf
 from app.utils.security import is_uuid4
+from app.utils.validators import stream_save_pdf
 
 router = APIRouter()
 
