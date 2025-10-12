@@ -11,12 +11,9 @@ from app.config import Settings
 from app.deps import get_app_settings
 from app.utils.files import secure_tmp_join
 from app.utils.ranges import RangeParseError, parse_ranges
+from app.utils.mime import is_pdf
 from app.utils.security import is_uuid4
-from app.utils.validators import (
-    validate_and_save_pdf,
-    validate_and_save_pdf_or_image_for_ocr,
-    validate_and_save_pdfs_for_merge,
-)
+from app.utils.validators import stream_save_pdf, stream_save_pdfs_for_merge
 
 # Importações de Celery/tarefas são feitas sob demanda dentro das rotas
 # para evitar falhas de import quando o ambiente não possui Celery runtime
@@ -53,7 +50,7 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
             raise HTTPException(status_code=400, detail="Envie 2+ PDFs para merge")
         total_limit = 100 * 1024 * 1024
         max_bytes = settings.MAX_FILE_MB * 1024 * 1024
-        inputs = await validate_and_save_pdfs_for_merge(files, tmp, max_bytes, total_limit)
+        inputs = await stream_save_pdfs_for_merge(files, tmp, max_bytes, total_limit)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
 
         res = tasks.task_merge.apply_async(kwargs={"tmp_dir": tmp, "inputs": inputs})
@@ -62,8 +59,8 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "split":
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF")
-        input_path, _size = await validate_and_save_pdf(
-            file, tmp, settings.MAX_FILE_MB * 1024 * 1024
+        input_path = await stream_save_pdf(
+            file, tmp, settings.MAX_FILE_MB * 1024 * 1024, "Apenas PDF é aceito"
         )
         if not ranges:
             raise HTTPException(status_code=400, detail="Informe ranges")
@@ -82,8 +79,8 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "compress":
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF")
-        input_path, _size = await validate_and_save_pdf(
-            file, tmp, settings.MAX_FILE_MB * 1024 * 1024
+        input_path = await stream_save_pdf(
+            file, tmp, settings.MAX_FILE_MB * 1024 * 1024, "Apenas PDF é aceito"
         )
         if quality not in {"low", "medium", "high"}:
             raise HTTPException(status_code=400, detail="quality inválido")
@@ -101,8 +98,8 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
     if type == "to-images":
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF")
-        input_path, _size = await validate_and_save_pdf(
-            file, tmp, settings.MAX_FILE_MB * 1024 * 1024
+        input_path = await stream_save_pdf(
+            file, tmp, settings.MAX_FILE_MB * 1024 * 1024, "Apenas PDF é aceito"
         )
         if format not in {"jpg", "png"} or not dpi:
             raise HTTPException(status_code=400, detail="Parâmetros inválidos")
@@ -122,9 +119,18 @@ async def create_job(  # noqa: PLR0913, PLR0912, PLR0915
         if not file:
             raise HTTPException(status_code=400, detail="Envie o PDF/Imagem")
         langs = (lang or "por").split("+")
-        input_path = await validate_and_save_pdf_or_image_for_ocr(
-            file, tmp, settings.MAX_FILE_MB * 1024 * 1024
-        )
+        if is_pdf(file.filename, file.content_type or ""):
+            input_path = await stream_save_pdf(
+                file, tmp, settings.MAX_FILE_MB * 1024 * 1024, "Apenas PDF é aceito"
+            )
+        else:
+            data = await file.read()
+            if len(data) > settings.MAX_FILE_MB * 1024 * 1024:
+                raise HTTPException(status_code=413, detail="Arquivo excede o limite de tamanho")
+            # Reutiliza caminho simples para imagens
+            from app.utils.files import save_upload  # local import to avoid unused when not needed
+
+            input_path = save_upload(tmp, file.filename, data)
         from app.workers import tasks  # noqa: PLC0415  # import tardio
 
         res = tasks.task_ocr.apply_async(
