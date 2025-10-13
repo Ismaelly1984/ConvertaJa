@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ismaelly1984.convertaja",
+      "sha256_cert_fingerprints": [
+        "DB:D0:CF:77:20:42:0C:02:8B:A4:BD:81:9B:F0:20:EA:93:8A:2E:8E:F5:26:84:B2:2A:F7:42:B5:0B:31:18:89"
+      ]
+    }
+  }
+]
+
