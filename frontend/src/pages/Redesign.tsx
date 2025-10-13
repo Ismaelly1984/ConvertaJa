@@ -69,7 +69,8 @@ export default function Redesign() {
   const base = import.meta.env.BASE_URL || '/'
   const heroStyle: React.CSSProperties = {
     // Prefer AVIF with JPEG fallback using CSS image-set
-    '--hero-bg-image': `image-set(url(${base}hero.avif) type("image/avif") 1x, url(${base}hero.jpg) type("image/jpeg") 1x)`,
+    // Use bracket notation for custom CSS variables
+    ['--hero-bg-image' as any]: `image-set(url(${base}hero.avif) type("image/avif") 1x, url(${base}hero.jpg) type("image/jpeg") 1x)`,
   }
 
   useEffect(() => {
@@ -332,8 +333,17 @@ export default function Redesign() {
 
       {/* Footer */}
       <footer className="gradient-bg text-white py-8">
-        <div className="container mx-auto px-6">
-          <p className="text-center">© 2025 ConvertaJá — Todos os direitos reservados</p>
+        <div className="container mx-auto px-6 text-center">
+          <p className="mb-2">© 2025 ConvertaJá — {locale === 'pt' ? 'Todos os direitos reservados' : 'All rights reserved'}</p>
+          <p>
+            <a
+              href={`${import.meta.env.BASE_URL || '/'}privacy.html`}
+              className="underline decoration-white/70 hover:decoration-white"
+              rel="noopener"
+            >
+              {locale === 'pt' ? 'Política de Privacidade' : 'Privacy Policy'}
+            </a>
+          </p>
         </div>
       </footer>
     </div>
