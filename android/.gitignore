@@ -1,0 +1,5 @@
+# Ensure upload keystore is never committed
+upload-keystore.jks
+*.jks
+*.keystore
+

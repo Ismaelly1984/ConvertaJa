@@ -1,0 +1,29 @@
+# Android/TWA build artifacts and local files
+
+# Gradle caches and config
+.gradle/
+gradle/
+local.properties
+
+# IDE
+.idea/
+*.iml
+
+# Build outputs
+build/
+app/build/
+
+# Packages / artifacts
+*.apk
+*.apk.idsig
+*.aab
+*.apks
+
+# Keystores (do not commit)
+*.jks
+*.keystore
+
+# Misc
+captures/
+*.log
+
