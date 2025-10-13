@@ -67,10 +67,10 @@ export default function Redesign() {
 
   // Estilo tipado para variável CSS do hero (evita any/assertions)
   const base = import.meta.env.BASE_URL || '/'
-  const heroStyle: React.CSSProperties = {
+  type HeroCssVars = { ['--hero-bg-image']: string }
+  const heroStyle: React.CSSProperties & HeroCssVars = {
     // Prefer AVIF with JPEG fallback using CSS image-set
-    // Use bracket notation for custom CSS variables
-    ['--hero-bg-image' as any]: `image-set(url(${base}hero.avif) type("image/avif") 1x, url(${base}hero.jpg) type("image/jpeg") 1x)`,
+    '--hero-bg-image': `image-set(url(${base}hero.avif) type("image/avif") 1x, url(${base}hero.jpg) type("image/jpeg") 1x)`,
   }
 
   useEffect(() => {
